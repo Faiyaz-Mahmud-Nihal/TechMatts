@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TechMatts - Account Login</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="cart.js"></script>
+</head>
+<body>
+    <!-- Navigation Bar (Same as other pages) -->
+    <nav class="navbar">
+        <div class="container">
+            <a href="index.html" class="logo">TechMatts</a>
+            <div class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="shop.html">Shop</a>
+                <a href="contact.html">Contact</a>
+                <a href="login.html" class="active">Login/Register</a>
+                <a href="cart.html" class="icon-link cart-icon">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span class="cart-count">0</span>
+                </a>
+            </div>
+            <button class="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Login Page Content -->
+    <main class="login-page">
+        <div  class="container">
+            <div  style="margin-top: 100px;border: solid whitesmoke 1px;" class="auth-container">
+                <!-- Login Form -->
+                <div  class="auth-form">
+                    <h2 style="color: whitesmoke;">Login</h2>
+                    <form class="login-form">
+                        <div class="form-group">
+                            <label for="login-email">Phone / E-Mail</label>
+                            <input type="text" id="login-email" placeholder="Enter your phone or email" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="login-password">Password</label>
+                            <input type="password" id="login-password" placeholder="Enter your password" required>
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="btn auth-btn">Login</button>
+                        </div>
+                    </form>
+                    <div class="auth-footer">
+                        <p>Don't have an account? <a href="#" class="toggle-form" data-form="register">Create Your Account</a></p>
+                    </div>
+                </div>
+
+                <!-- Register Form (Hidden by default) -->
+                <div class="auth-form register-form" style="display: none;">
+                    <h2 style="color:white ;">Register</h2>
+                    <form class="register-form">
+                        <div class="form-group">
+                            <label for="reg-name">Full Name</label>
+                            <input type="text" id="reg-name" placeholder="Enter your full name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="reg-email">E-Mail</label>
+                            <input type="email" id="reg-email" placeholder="Enter your email" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="reg-phone">Phone Number</label>
+                            <input type="tel" id="reg-phone" placeholder="Enter your phone number" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="reg-password">Password</label>
+                            <input type="password" id="reg-password" placeholder="Create a password" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="reg-confirm">Confirm Password</label>
+                            <input type="password" id="reg-confirm" placeholder="Confirm your password" required>
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="btn auth-btn">Register</button>
+                        </div>
+                    </form>
+                    <div class="auth-footer">
+                        <p>Already have an account? <a href="#" class="toggle-form" data-form="login">Login</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer (Same as other pages) -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-section">
+                <h3>TechMatts</h3>
+                <p>Your one-stop shop for premium PC accessories that combine functionality with style.</p>
+            </div>
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="shop.html">Shop</a></li>
+                    <li><a href="contact.html">Contact</a></li>
+                    <li><a href="login.html">Login</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Contact Us</h3>
+                <p>Email: info@techmatts.com</p>
+                <p>Phone: (123) 456-7890</p>
+            </div>
+        </div>
+        <div class="copyright">
+            <p>&copy; 2023 TechMatts. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+    // Mobile menu toggle
+    const hamburger = document.querySelector('.hamburger');
+    const navLinks = document.querySelector('.nav-links');
+    
+    hamburger.addEventListener('click', () => {
+        navLinks.classList.toggle('active');
+        hamburger.classList.toggle('active');
+    });
+
+    // Cart synchronization
+    document.addEventListener('DOMContentLoaded', function() {
+        // Use cart.js's update function if available
+        if (typeof updateCartCounter === 'function') {
+            updateCartCounter();
+        } else {
+            // Fallback using the same logic as cart.js
+            const cart = JSON.parse(localStorage.getItem('cart')) || [];
+            const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+            document.querySelectorAll('.cart-count').forEach(el => el.textContent = totalItems);
+        }
+
+        // Listen for cart changes from other tabs
+        window.addEventListener('storage', function(e) {
+            if (e.key === 'cart') {
+                if (typeof updateCartCounter === 'function') {
+                    updateCartCounter();
+                } else {
+                    const cart = JSON.parse(e.newValue) || [];
+                    const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+                    document.querySelectorAll('.cart-count').forEach(el => el.textContent = totalItems);
+                }
+            }
+        });
+
+        // Existing form toggle logic
+        document.querySelectorAll('.toggle-form').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const formToShow = e.target.getAttribute('data-form');
+                
+                if (formToShow === 'register') {
+                    document.querySelector('.auth-form').style.display = 'none';
+                    document.querySelector('.register-form').style.display = 'block';
+                } else {
+                    document.querySelector('.auth-form').style.display = 'block';
+                    document.querySelector('.register-form').style.display = 'none';
+                }
+            });
+        });
+    });
+</script>
+</body>
+</html>

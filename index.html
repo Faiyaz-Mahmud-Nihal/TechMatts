@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TechMatts - Cool PC Accessories</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="cart.js"></script>
+    <script src="products.js"></script>
+
+    <style>
+        /* Hero Section Styles */
+.hero {
+    position: relative;
+    height: 90vh;
+    min-height: 600px;
+    color: white;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    margin-top: 70px; /* Adjust for fixed navbar */
+}
+
+.hero::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image:url(media/coverphoto/2c29159e95dd2feab4c29f2610b6907b.jpg);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    z-index: -1;
+    filter: brightness(0.7); /* Darken image slightly for better text contrast */
+}
+
+.hero .container {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    padding: 0 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.hero h1 {
+    font-size: 3.5rem;
+    margin-bottom: 20px;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+    animation: fadeInUp 0.8s ease;
+}
+
+.hero p {
+    font-size: 1.5rem;
+    max-width: 700px;
+    margin: 0 auto 30px;
+    text-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+    animation: fadeInUp 1s ease;
+}
+
+.hero .btn {
+    animation: fadeInUp 1.2s ease;
+    padding: 15px 30px;
+    font-size: 1.1rem;
+    background-color: var(--primary);
+    border: 2px solid var(--primary);
+    transition: all 0.3s ease;
+}
+
+.hero .btn:hover {
+    background-color: transparent;
+    transform: translateY(-3px);
+}
+
+/* Animation */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsive Adjustments */
+@media (max-width: 992px) {
+    .hero {
+        height: 70vh;
+        min-height: 500px;
+    }
+    
+    .hero h1 {
+        font-size: 2.8rem;
+    }
+    
+    .hero p {
+        font-size: 1.2rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .hero {
+        height: 60vh;
+        min-height: 400px;
+    }
+    
+    .hero h1 {
+        font-size: 2.2rem;
+    }
+    
+    .hero p {
+        font-size: 1rem;
+        max-width: 90%;
+    }
+    
+    .hero .btn {
+        padding: 12px 25px;
+    }
+}
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="container">
+            <a href="index.html" class="logo">TechMatts</a>
+            <div class="nav-links">
+                <a href="index.html" class="active">Home</a>
+                <a href="shop.html">Shop</a>
+                <a href="contact.html">Contact</a>
+                <a href="login.html">Login/Register</a>
+                <div class="cart-icon">
+                    <a href="cart.html"><i class="fas fa-shopping-cart"></i></a>
+                    <span class="cart-count">0</span>
+                    <div class="cart-dropdown"></div>
+                </div>
+            </div>
+            <button class="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Hero Banner -->
+    <section class="hero">
+        <div style="background-image: url(media/Mousepad/Mozaic\ Matrix/pcbbd-typogrpahy.webp);" class="container">
+            <h1>Upgrade Your Setup</h1>
+            <p>Premium mousepads, keycaps & PC accessories for gamers and professionals</p>
+            <a href="shop.html" class="btn">Shop Now</a>
+        </div>
+    </section>
+
+    <!-- Featured Products -->
+    <section class="featured">
+        <div class="container">
+            <h2>Featured Products</h2>
+            <div class="products-grid">
+                <!-- Product 1 -->
+                <div style="border: solid white 1px;" class="product-card">
+                    <a href="product-details.html?id=mp-001" class="product-link">
+                        <img src="media/Mousepad/New folder/rickshaw-in-street.webp" alt="RGB Mousepad">
+                        <h3>Street Vibes Mousepad</h3>
+                    </a>
+                    <p class="price">850৳</p>
+                    <button class="btn add-to-cart-btn" 
+                        data-id="mp-001"
+                        data-name="Street Vibes Mousepad"
+                        data-price="850"
+                        data-image="media/Mousepad/New folder/rickshaw-in-street.webp">
+                        Add to Cart
+                    </button>
+                </div>
+                
+                <!-- Product 2 -->
+                <div style="border: solid white 1px;" class="product-card">
+                    <a href="product-details.html?id=mp-002" class="product-link">
+                        <img src="media/Mousepad/kenseiMat/1.webp" alt="KenseiMat">
+                        <h3>KenseiMat</h3>
+                    </a>
+                    <p class="price">5200৳</p>
+                    <button class="btn add-to-cart-btn" 
+                        data-id="mp-002"
+                        data-name="KenseiMat"
+                        data-price="5200"
+                        data-image="media/Mousepad/kenseiMat/1.webp">
+                        Add to Cart
+                    </button>
+                </div>
+                
+                <!-- Product 3 -->
+                <div style="border: solid white 1px;" class="product-card">
+                    <a href="product-details.html?id=mp-003" class="product-link">
+                        <img src="media/Mousepad/Red Samurai/red-samurai.webp" alt="Red Samurai Mousepad">
+                        <h3>Red Samurai Mousepad</h3>
+                    </a>
+                    <p class="price">1100৳</p>
+                    <button class="btn add-to-cart-btn" 
+                        data-id="mp-003"
+                        data-name="Red Samurai Mousepad"
+                        data-price="1100"
+                        data-image="media/Mousepad/Red Samurai/red-samurai.webp">
+                        Add to Cart
+                    </button>
+                </div>
+                
+                <!-- Product 4 -->
+                <div style="border: solid white 1px;" class="product-card">
+                    <a href="product-details.html?id=mp-004" class="product-link">
+                        <img src="media/Mousepad/Ukiru/house-art-design.webp" alt="Ukiru Mousepad">
+                        <h3>Ukiru Mousepad</h3>
+                    </a>
+                    <p class="price">850৳</p>
+                    <button class="btn add-to-cart-btn" 
+                        data-id="mp-004"
+                        data-name="Ukiru Mousepad"
+                        data-price="850"
+                        data-image="media/Mousepad/Ukiru/house-art-design.webp">
+                        Add to Cart
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Ready PC Builds Section -->
+    <section class="pc-builds">
+        <div class="container">
+            <h2 style="color: white;">Build With The Pros</h2>
+            <h3 style="color:rgb(201, 201, 201);">OUR READY GAMING PC BUILDS</h3>
+            <p class="subtitle" style="color:rgb(201, 201, 201);">We got 4 types of PC builds for you.<br>Just click the contact us button for more details.</p>
+            
+            <div class="builds-grid">
+                <!-- Build 1 -->
+                <div class="build-card">
+                    <a href="product-details.html?id=pc-008" class="build-link">
+                        <div class="build-price">42,000 <span>Taka BDT</span></div>
+                        <ul class="build-specs">
+                            <li>AMD Ryzen 5 5500</li>
+                            <li>8GB RAM</li>
+                            <li>AMD RX 580</li>
+                            <li>512GB SSD</li>
+                        </ul>
+                    </a>
+                    <button class="btn build-btn buy-now-btn" 
+                        data-id="pc-008"
+                        data-name="Lite 42k PC For Lite Gaming"
+                        data-price="42000"
+                        data-image="media/Custom PC/77k Gaming PC/16.png">
+                        BUY NOW
+                    </button>
+                </div>
+                
+                <!-- Build 2 -->
+                <div class="build-card">
+                    <a href="product-details.html?id=pc-007" class="build-link">
+                        <div class="build-price">69,000 <span>Taka BDT</span></div>
+                        <ul class="build-specs">
+                            <li>AMD Ryzen 5 5600x</li>
+                            <li>8GB RAM</li>
+                            <li>Arc A750</li>
+                            <li>512GB SSD</li>
+                        </ul>
+                    </a>
+                    <button class="btn build-btn buy-now-btn" 
+                        data-id="pc-007"
+                        data-name="Core 69k PC Build"
+                        data-price="69000"
+                        data-image="media/Custom PC/Core 69k PC Build/2-2.svg">
+                        BUY NOW
+                    </button>
+                </div>
+                
+                <!-- Build 3 -->
+                <div class="build-card">
+                    <a href="product-details.html?id=pc-006" class="build-link">
+                        <div class="build-price">89,000 <span>Taka BDT</span></div>
+                        <ul class="build-specs">
+                            <li>AMD Ryzen 5 7500F</li>
+                            <li>16GB RAM</li>
+                            <li>Arc B580</li>
+                            <li>512GB SSD (Gen 4)</li>
+                        </ul>
+                    </a>
+                    <button class="btn build-btn buy-now-btn" 
+                        data-id="pc-006"
+                        data-name="Premium 89k PC Build"
+                        data-price="89000"
+                        data-image="media/Custom PC/Premium 89k PC Build/3-2.svg">
+                        BUY NOW
+                    </button>
+                </div>
+                
+                <!-- Build 4 -->
+                <div class="build-card">
+                    <a href="product-details.html?id=pc-005" class="build-link">
+                        <div class="build-price">6,70,000 <span>Taka BDT</span></div>
+                        <ul class="build-specs">
+                            <li>AMD Ryzen 7 9800X3D</li>
+                            <li>32GB RAM</li>
+                            <li>RTX 5090</li>
+                            <li>2TB SSD (Gen 4)</li>
+                        </ul>
+                    </a>
+                    <button class="btn build-btn buy-now-btn" 
+                        data-id="pc-005"
+                        data-name="Pro 670k PC Build"
+                        data-price="670000"
+                        data-image="media/Custom PC/Pro 670k PC Build/4-1.svg">
+                        BUY NOW
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Custom PC Section -->
+    <section class="pro-builds">
+        <div class="container">
+            <h2 style="color: white;">Pro Builds</h2>
+            <h3 style="color:rgb(201, 201, 201)">CUSTOM PC</h3>
+            <p class="subtitle" style="color:rgb(201, 201, 201);">All in one or custom liquid-cooled system, we've got you. Reach us via email or contact us</p>
+
+            <div class="pro-builds-grid">
+                <!-- PCB Lite -->
+                <div class="pro-build-card">
+                    <div class="build-inner">
+                        <div class="build-image">
+                            <img src="media/Custom PC/77k Gaming PC/16.png" alt="PCB Lite Build">
+                        </div>
+                        <div class="build-content">
+                            <h4 style="color: white;">PCB Lite</h4>
+                            <ul class="build-specs">
+                                <li>AMD Ryzen 5 5500</li>
+                                <li>MSI B450M-A Pro Max II</li>
+                                <li>Apache NOX 8GB 3200Mhz</li>
+                                <li>XOC G300 512GB</li>
+                                <li>PELADN RX 580 8G 256Bit</li>
+                            </ul>
+                            <a href="product-details.html?id=pc-008" class="btn read-more-btn">READ MORE</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PCB Core -->
+                <div class="pro-build-card">
+                    <div class="build-inner">
+                        <div class="build-image">
+                            <img src="media/Custom PC/Core 69k PC Build/2-2.svg" alt="PCB Core Build">
+                        </div>
+                        <div class="build-content">
+                            <h4 style="color: white;">PCB Core</h4>
+                            <ul class="build-specs">
+                                <li>AMD Ryzen 5 5600x</li>
+                                <li>Asus Prime B450M-k II</li>
+                                <li>OCPC X3 8GB RGB 3200MHz</li>
+                                <li>Acer FA100 512GB</li>
+                                <li>Sparkle Intel Arc A750 ROC</li>
+                            </ul>
+                            <a href="product-details.html?id=pc-007" class="btn read-more-btn">READ MORE</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PCB Premium -->
+                <div class="pro-build-card">
+                    <div class="build-inner">
+                        <div class="build-image">
+                            <img src="media/Custom PC/Premium 89k PC Build/3-2.svg" alt="PCB Premium Build">
+                        </div>
+                        <div class="build-content">
+                            <h4 style="color: white;">PCB Premium</h4>
+                            <ul class="build-specs">
+                                <li>AMD Ryzen 5 7500F</li>
+                                <li>MSI Pro B650-M</li>
+                                <li>16GB 6000Mhz DDR5</li>
+                                <li>Kingston KC3000 512GB</li>
+                                <li>GUNNIR Intel Arc B580</li>
+                            </ul>
+                            <a href="product-details.html?id=pc-006" class="btn read-more-btn">READ MORE</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PCB Pro -->
+                <div class="pro-build-card">
+                    <div class="build-inner">
+                        <div class="build-image">
+                            <img src="media/Custom PC/Pro 670k PC Build/4-1.svg" alt="PCB Pro Build">
+                        </div>
+                        <div class="build-content">
+                            <h4 style="color: white;">PCB Pro</h4>
+                            <ul class="build-specs">
+                                <li>AMD Ryzen 7 9800X3D</li>
+                                <li>X870E AORUS MASTER DDR5</li>
+                                <li>32GB DDR5 6000MHz</li>
+                                <li>KC3000 2TB PCIe 4.0</li>
+                                <li>AORUS GeForce RTX 5090</li>
+                            </ul>
+                            <a href="product-details.html?id=pc-005" class="btn read-more-btn">READ MORE</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Newsletter Signup -->
+    <section class="newsletter">
+        <div class="container">
+            <h2>Stay Updated</h2>
+            <p>Subscribe to get 10% off your first order and hear about new products!</p>
+            <form>
+                <input type="email" placeholder="Your email address" required>
+                <button type="submit" class="btn">Subscribe</button>
+            </form>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-section">
+                <h3>TechMatts</h3>
+                <p>Your one-stop shop for premium PC accessories that combine functionality with style.</p>
+            </div>
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="shop.html">Shop</a></li>
+                    <li><a href="contact.html">Contact</a></li>
+                    <li><a href="login.html">Login</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Contact Us</h3>
+                <p>Email: info@techmatts.com</p>
+                <p>Phone: (123) 456-7890</p>
+            </div>
+        </div>
+        <div class="copyright">
+            <p>&copy; 2023 TechMatts. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Initialize cart counter
+        updateCartCounter();
+
+        // Add to cart functionality
+        document.querySelectorAll('.add-to-cart-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const product = {
+                    id: this.dataset.id,
+                    name: this.dataset.name,
+                    price: parseFloat(this.dataset.price),
+                    image: this.dataset.image,
+                    quantity: 1
+                };
+                addToCart(product);
+                
+                // Visual feedback
+                const originalText = this.textContent;
+                this.textContent = 'Added!';
+                setTimeout(() => {
+                    this.textContent = originalText;
+                }, 1000);
+            });
+        });
+
+        // Buy now functionality
+        document.querySelectorAll('.buy-now-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const product = {
+                    id: this.dataset.id,
+                    name: this.dataset.name,
+                    price: parseFloat(this.dataset.price),
+                    image: this.dataset.image,
+                    quantity: 1
+                };
+                addToCart(product);
+                window.location.href = 'checkout.html';
+            });
+        });
+
+        // Read more buttons are now regular links, no JS needed
+    </script>
+</body>
+</html>

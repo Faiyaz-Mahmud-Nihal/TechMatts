@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TechMatts - Product Details</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <script src="products.js"></script>
+  <script src="renderProducts.js"></script>
+  <script src="cart.js"></script>
+</head>
+
+<body>
+  <!-- Navigation Bar -->
+  <nav class="navbar">
+    <div class="container">
+      <a href="index.html" class="logo">TechMatts</a>
+      <div class="nav-links">
+        <a href="index.html">Home</a>
+        <a href="shop.html">Shop</a>
+        <a href="contact.html">Contact</a>
+        <a href="login.html">Login/Register</a>
+        <a href="wishlist.html" class="icon-link"><i class="far fa-heart"></i></a>
+        <div class="cart-icon">
+          <a href="cart.html" id="cart-icon-link"><i class="fas fa-shopping-cart"></i></a>
+          <span class="cart-count">0</span>
+        </div>
+      </div>
+      <button class="hamburger">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Breadcrumb Navigation -->
+  <div class="breadcrumb">
+    <div class="container">
+      <a href="index.html">Home</a> /
+      <a href="shop.html">Shop</a> /
+      <span id="breadcrumb-category">Product</span> /
+      <span id="breadcrumb-product">Details</span>
+    </div>
+  </div>
+
+  <!-- Product Detail Section -->
+  <main class="product-detail-page">
+    <div class="container">
+      <div class="product-detail-container">
+        <!-- Image Gallery Section -->
+        <div class="product-gallery">
+          <div class="main-image">
+            <img src="" alt="" id="main-product-image">
+          </div>
+          <div class="thumbnails">
+            <!-- Will be populated by JavaScript -->
+          </div>
+        </div>
+
+        <!-- Product Info Section -->
+        <div class="product-info">
+          <h1 id="product-title">Product Name</h1>
+          <p class="price" id="product-price">0.00৳</p>
+          
+          <div class="product-features">
+            <ul id="product-specs">
+              <!-- Will be populated by JavaScript -->
+            </ul>
+          </div>
+          
+          <div class="size-options" id="size-options-container">
+            <h3>Size:</h3>
+            <div class="size-buttons" id="size-buttons-container">
+              <!-- Will be populated by JavaScript if product has sizes -->
+            </div>
+          </div>
+          
+          <div class="quantity-selector">
+            <h3>Quantity:</h3>
+            <div class="quantity-control">
+              <button class="qty-btn minus">-</button>
+              <span class="quantity">1</span>
+              <button class="qty-btn plus">+</button>
+            </div>
+          </div>
+          
+          <div class="action-buttons">
+            <button class="action-btn add-to-cart">ADD TO CART</button>
+            <button class="action-btn buy-now">BUY NOW</button>
+          </div>
+          
+          <div class="secondary-actions">
+            <a href="#" class="compare-link"><i class="fas fa-exchange-alt"></i> Add to compare</a>
+            <a href="#" class="wishlist-link"><i class="far fa-heart"></i> Add to wishlist</a>
+          </div>
+          
+          <div class="product-meta">
+            <p id="product-sku"><strong>SKU:</strong> <!-- Will be populated --></p>
+            <p id="product-categories"><strong>Categories:</strong> <!-- Will be populated --></p>
+            <p id="product-tags"><strong>Tags:</strong> <!-- Will be populated --></p>
+          </div>
+          
+          <div class="social-share">
+            <span>Share:</span>
+            <a href="#" class="social-icon"><i class="fab fa-facebook-f"></i></a>
+            <a href="#" class="social-icon"><i class="fab fa-twitter"></i></a>
+            <a href="#" class="social-icon"><i class="fab fa-pinterest-p"></i></a>
+            <a href="#" class="social-icon"><i class="fab fa-linkedin-in"></i></a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-section">
+        <h3>TechMatts</h3>
+        <p>Your one-stop shop for premium PC accessories that combine functionality with style.</p>
+      </div>
+      <div class="footer-section">
+        <h3>Quick Links</h3>
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="shop.html">Shop</a></li>
+          <li><a href="contact.html">Contact</a></li>
+          <li><a href="login.html">Login</a></li>
+        </ul>
+      </div>
+      <div class="footer-section">
+        <h3>Contact Us</h3>
+        <p>Email: info@techmatts.com</p>
+        <p>Phone: (123) 456-7890</p>
+      </div>
+    </div>
+    <div class="copyright">
+      <p>&copy; 2023 TechMatts. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script>
+    // Wait for DOM and all resources to be fully loaded
+    window.addEventListener('load', function() {
+        // Initialize cart counter
+        updateCartCounter();
+
+        // Get product ID from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const productId = urlParams.get('id');
+        const product = products.find(p => p.id === productId);
+
+        if (!product) {
+            console.error('Product not found with ID:', productId);
+            document.querySelector('.product-detail-container').innerHTML = '<div class="error">Product not found</div>';
+            return;
+        }
+
+        // Update breadcrumbs
+        document.getElementById('breadcrumb-category').textContent = product.category === 'pcbuild' ? 'PC Builds' : 'Mousepads';
+        document.getElementById('breadcrumb-product').textContent = product.name;
+
+        // Update product details
+        document.title = `TechMatts - ${product.name}`;
+        document.getElementById('product-title').textContent = product.name;
+        document.getElementById('product-price').textContent = product.priceRange || `${product.price.toFixed(2)}৳`;
+
+        // Main image and thumbnails
+        const mainImg = document.getElementById('main-product-image');
+        mainImg.src = product.image;
+        mainImg.alt = product.name;
+
+        // Thumbnails
+        const thumbsContainer = document.querySelector('.thumbnails');
+        thumbsContainer.innerHTML = product.thumbnails.map((thumb, i) => `
+            <div class="thumbnail ${i === 0 ? 'active' : ''}" data-image="${thumb}">
+                <img src="${thumb}" alt="${product.name} - View ${i+1}">
+            </div>
+        `).join('');
+
+        // Thumbnail click handler
+        thumbsContainer.addEventListener('click', function(e) {
+            const thumb = e.target.closest('.thumbnail');
+            if (!thumb) return;
+            
+            document.querySelectorAll('.thumbnail').forEach(t => t.classList.remove('active'));
+            thumb.classList.add('active');
+            mainImg.src = thumb.dataset.image;
+        });
+
+        // Product specs/features
+        const specsList = document.getElementById('product-specs');
+        if (product.category === 'pcbuild') {
+            specsList.innerHTML = product.specs.map(spec => `<li>${spec}</li>`).join('');
+            document.getElementById('size-options-container').style.display = 'none';
+        } else {
+            specsList.innerHTML = `
+                <li><strong>Type:</strong> ${product.type}</li>
+                <li><strong>Size:</strong> <span id="selected-size">${product.sizes[0].dimensions}</span></li>
+                ${product.features.map(feat => `<li>${feat}</li>`).join('')}
+            `;
+            
+            // Size buttons
+            const sizeButtonsContainer = document.getElementById('size-buttons-container');
+            sizeButtonsContainer.innerHTML = product.sizes.map((size, i) => `
+                <button class="size-btn ${i === 0 ? 'active' : ''}" 
+                        data-size="${size.dimensions}" 
+                        data-sku="${size.sku}">
+                    ${size.dimensions}
+                </button>
+            `).join('');
+            
+            // Size selection handler
+            sizeButtonsContainer.addEventListener('click', function(e) {
+                const btn = e.target.closest('.size-btn');
+                if (!btn) return;
+                
+                document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                document.getElementById('selected-size').textContent = btn.dataset.size;
+            });
+        }
+
+        // Meta information
+        document.getElementById('product-sku').innerHTML = `<strong>SKU:</strong> ${product.sizes ? product.sizes[0].sku : product.id}`;
+        document.getElementById('product-categories').innerHTML = `<strong>Categories:</strong> ${product.categories.join(', ')}`;
+        document.getElementById('product-tags').innerHTML = `<strong>Tags:</strong> ${product.tags.join(', ')}`;
+
+        // Quantity handler
+        document.querySelector('.quantity-control').addEventListener('click', function(e) {
+            const qtyElement = this.querySelector('.quantity');
+            let qty = parseInt(qtyElement.textContent);
+            
+            if (e.target.classList.contains('minus') && qty > 1) {
+                qty--;
+            } else if (e.target.classList.contains('plus')) {
+                qty++;
+            }
+            qtyElement.textContent = qty;
+        });
+
+        // Add to cart handler
+        document.querySelector('.add-to-cart').addEventListener('click', function() {
+            const productData = {
+                id: product.id,
+                name: product.name,
+                price: product.price,
+                image: product.image,
+                size: product.sizes ? document.getElementById('selected-size').textContent : undefined,
+                quantity: parseInt(document.querySelector('.quantity').textContent) || 1
+            };
+            
+            addToCart(productData);
+            
+            // Visual feedback
+            const originalText = this.textContent;
+            this.textContent = 'Added!';
+            this.classList.add('added');
+            
+            setTimeout(() => {
+                this.textContent = originalText;
+                this.classList.remove('added');
+            }, 1000);
+        });
+
+        // Buy now handler
+        document.querySelector('.buy-now').addEventListener('click', function() {
+            const productData = {
+                id: product.id,
+                name: product.name,
+                price: product.price,
+                image: product.image,
+                size: product.sizes ? document.getElementById('selected-size').textContent : undefined,
+                quantity: parseInt(document.querySelector('.quantity').textContent) || 1
+            };
+            
+            addToCart(productData);
+            window.location.href = 'checkout.html';
+        });
+
+        // Cart icon navigation
+        document.getElementById('cart-icon-link').addEventListener('click', function(e) {
+            e.preventDefault();
+            window.location.href = 'cart.html';
+        });
+    });
+  </script>
+</body>
+</html>

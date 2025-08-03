@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TechMatts - Mouse Pads</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="cart.js"></script>
+    <style>
+        /* Custom CSS for this page */
+        .products-grid {
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+        }
+        
+        .product-card {
+            padding: 20px;
+            min-height: 400px;
+        }
+        
+        .product-image img {
+            height: 200px;
+            object-fit: contain;
+        }
+        
+        .product-specs ul {
+            list-style: none;
+            padding: 0;
+            margin: 10px 0;
+        }
+        
+        /* Mouse Pad Cards */
+        .product-card {
+            transition: transform 0.3s ease;
+            border-radius: 8px;
+            background: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .product-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .add-to-cart {
+            width: 100%;
+            padding: 12px;
+            background: #0066cc;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+        
+        .add-to-cart.added {
+            background: #4CAF50;
+        }
+        
+        .product-specs ul {
+            margin: 15px 0;
+            color: #555;
+            line-height: 1.6;
+        }
+        
+        .product-specs li {
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Main Navigation (Same as before) -->
+    <nav class="navbar">
+        <div class="container">
+            <a href="index.html" class="logo">TechMatts</a>
+            <div class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="shop.html">Shop</a>
+                <a href="contact.html">Contact</a>
+                <a href="login.html">Login/Register</a>
+                
+                <a href="cart.html" class="icon-link cart-icon">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span class="cart-count">0</span>
+                </a>
+            </div>
+            <button class="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Shop Page Content -->
+    <main class="shop-page">
+        <!-- Shop Header -->
+        <header class="shop-header">
+            <div class="container">
+                <h1>Premium Mouse Pads</h1>
+            </div>
+        </header>
+
+        <!-- Category Navigation -->
+        <nav class="category-nav">
+            <div class="container">
+                <div class="category-list">
+                    <a href="custom-pc-builds.html" class="category-item" data-category="custom-pc">
+                        <span>Custom PC Builds</span>
+                        <span class="product-count">8 Products</span>
+                    </a>
+                    <a href="mousepads.html" class="category-item active" data-category="mouse-pads">
+                        <span>Mouse Pads</span>
+                        <span class="product-count">19 Products</span>
+                    </a>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Products Section - Modified -->
+        <section class="products-section">
+            <div class="container">
+                <!-- Products Grid - 3 columns -->
+                <div class="products-grid">
+                    <!-- Mouse Pad 1 -->
+                    <div class="product-card">
+                        <div class="product-image">
+                            <img src="images/mousepad1.jpg" alt="Speed Series Gaming Mouse Pad">
+                        </div>
+                        <h3 class="product-name">Speed Series Gaming</h3>
+                        <div class="product-specs">
+                            <ul>
+                                <li>900x400mm XXL Size</li>
+                                <li>Ultra-smooth surface</li>
+                                <li>Stitched edges</li>
+                                <li>3mm thickness</li>
+                            </ul>
+                        </div>
+                        <p class="product-price">$29.99</p>
+                        <button class="add-to-cart"
+                            data-id="mp-001"
+                            data-name="Speed Series Gaming Mouse Pad"
+                            data-price="29.99"
+                            data-image="images/mousepad1.jpg">
+                            Add to Cart
+                        </button>
+                    </div>
+
+                    <!-- Mouse Pad 2 -->
+                    <div class="product-card">
+                        <div class="product-image">
+                            <img src="images/mousepad2.jpg" alt="Control Series Gaming Mouse Pad">
+                        </div>
+                        <h3 class="product-name">Control Series Gaming</h3>
+                        <div class="product-specs">
+                            <ul>
+                                <li>800x300mm Large Size</li>
+                                <li>Textured control surface</li>
+                                <li>Rubber non-slip base</li>
+                                <li>4mm thickness</li>
+                            </ul>
+                        </div>
+                        <p class="product-price">$24.99</p>
+                        <button class="add-to-cart"
+                            data-id="mp-002"
+                            data-name="Control Series Gaming Mouse Pad"
+                            data-price="24.99"
+                            data-image="images/mousepad2.jpg">
+                            Add to Cart
+                        </button>
+                    </div>
+
+                    <!-- Mouse Pad 3 -->
+                    <div class="product-card">
+                        <div class="product-image">
+                            <img src="images/mousepad3.jpg" alt="RGB Extended Mouse Pad">
+                        </div>
+                        <h3 class="product-name">RGB Extended</h3>
+                        <div class="product-specs">
+                            <ul>
+                                <li>1000x500mm Extended Size</li>
+                                <li>16.8M Color RGB Lighting</li>
+                                <li>Water-resistant surface</li>
+                                <li>5mm thickness</li>
+                            </ul>
+                        </div>
+                        <p class="product-price">$39.99</p>
+                        <button class="add-to-cart"
+                            data-id="mp-003"
+                            data-name="RGB Extended Mouse Pad"
+                            data-price="39.99"
+                            data-image="images/mousepad3.jpg">
+                            Add to Cart
+                        </button>
+                    </div>
+
+                    <!-- Mouse Pad 4 -->
+                    <div class="product-card">
+                        <div class="product-image">
+                            <img src="images/mousepad4.jpg" alt="Stealth Ultra-Thin Mouse Pad">
+                        </div>
+                        <h3 class="product-name">Stealth Ultra-Thin</h3>
+                        <div class="product-specs">
+                            <ul>
+                                <li>600x400mm Medium Size</li>
+                                <li>2mm ultra-thin design</li>
+                                <li>Micro-weave surface</li>
+                                <li>Portable and lightweight</li>
+                            </ul>
+                        </div>
+                        <p class="product-price">$19.99</p>
+                        <button class="add-to-cart"
+                            data-id="mp-004"
+                            data-name="Stealth Ultra-Thin Mouse Pad"
+                            data-price="19.99"
+                            data-image="images/mousepad4.jpg">
+                            Add to Cart
+                        </button>
+                    </div>
+
+                    <!-- Mouse Pad 5 -->
+                    <div class="product-card">
+                        <div class="product-image">
+                            <img src="images/mousepad5.jpg" alt="Leather Desk Pad">
+                        </div>
+                        <h3 class="product-name">Leather Desk Pad</h3>
+                        <div class="product-specs">
+                            <ul>
+                                <li>900x400mm Office Size</li>
+                                <li>Premium PU leather</li>
+                                <li>Waterproof surface</li>
+                                <li>Memory foam base</li>
+                            </ul>
+                        </div>
+                        <p class="product-price">$34.99</p>
+                        <button class="add-to-cart"
+                            data-id="mp-005"
+                            data-name="Leather Desk Pad"
+                            data-price="34.99"
+                            data-image="images/mousepad5.jpg">
+                            Add to Cart
+                        </button>
+                    </div>
+
+                    <!-- Mouse Pad 6 -->
+                    <div class="product-card">
+                        <div class="product-image">
+                            <img src="images/mousepad6.jpg" alt="Gaming Hard Surface Pad">
+                        </div>
+                        <h3 class="product-name">Hard Surface Gaming</h3>
+                        <div class="product-specs">
+                            <ul>
+                                <li>350x300mm Compact Size</li>
+                                <li>Hard polymer surface</li>
+                                <li>Anti-skid rubber base</li>
+                                <li>Easy to clean</li>
+                            </ul>
+                        </div>
+                        <p class="product-price">$22.99</p>
+                        <button class="add-to-cart"
+                            data-id="mp-006"
+                            data-name="Gaming Hard Surface Pad"
+                            data-price="22.99"
+                            data-image="images/mousepad6.jpg">
+                            Add to Cart
+                        </button>
+                    </div>
+                </div>
+
+                
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer (Same as before) -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-section">
+                <h3>TechMatts</h3>
+                <p>Your one-stop shop for premium PC accessories that combine functionality with style.</p>
+            </div>
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="shop.html">Shop</a></li>
+                    <li><a href="contact.html">Contact</a></li>
+                    <li><a href="login.html">Login</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Contact Us</h3>
+                <p>Email: info@techmatts.com</p>
+                <p>Phone: (123) 456-7890</p>
+            </div>
+        </div>
+        <div class="copyright">
+            <p>&copy; 2023 TechMatts. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize cart counter
+            function updateCartCounter() {
+                const cart = JSON.parse(localStorage.getItem('techmattsCart')) || [];
+                const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+                document.querySelector('.cart-count').textContent = totalItems;
+            }
+
+            // Update counter on page load
+            updateCartCounter();
+
+            // Add to Cart functionality
+            document.querySelectorAll('.add-to-cart').forEach(button => {
+                button.addEventListener('click', function() {
+                    const product = {
+                        id: this.dataset.id,
+                        name: this.dataset.name,
+                        price: parseFloat(this.dataset.price),
+                        image: this.dataset.image
+                    };
+
+                    if (typeof window.addToCart === 'function') {
+                        window.addToCart(product);
+                        updateCartCounter();
+                        
+                        // Visual feedback
+                        this.textContent = 'Added!';
+                        this.classList.add('added');
+                        setTimeout(() => {
+                            this.textContent = 'Add to Cart';
+                            this.classList.remove('added');
+                        }, 1000);
+                    }
+                });
+            });
+
+            // Responsive grid adjustment
+            const productsGrid = document.querySelector('.products-grid');
+            function updateGridColumns() {
+                if (window.innerWidth >= 992) {
+                    productsGrid.style.gridTemplateColumns = 'repeat(3, 1fr)';
+                } else if (window.innerWidth >= 768) {
+                    productsGrid.style.gridTemplateColumns = 'repeat(2, 1fr)';
+                } else {
+                    productsGrid.style.gridTemplateColumns = '1fr';
+                }
+            }
+
+            window.addEventListener('resize', updateGridColumns);
+            updateGridColumns();
+        });
+    </script>
+</body>
+</html>
