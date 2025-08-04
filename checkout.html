@@ -5,10 +5,250 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Checkout | TechMatts</title>
     <link rel="stylesheet" href="style.css">
-    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link rel="shortcut icon" href="media/Logo/create-a-logo-for-my-website-the-weebsit_Pl278Ev2SJmm6WHacUFJ8A_6NSYBivoQg2-89jA-pvVVw.jpeg" type="image/x-icon">
-    
+    <style>
+        /* Checkout Page Styles */
+        .checkout-page {
+            padding: 120px 0 60px;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+        }
+
+        .checkout-container {
+            display: flex;
+            gap: 80px;
+            margin-top: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .billing-section {
+            flex: 2;
+            background: var(--dark);
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            margin-top: 100px;
+        }
+
+        .order-summary {
+            flex: 1;
+            background: var(--dark);
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            margin-top: 100px;
+        }
+
+        /* Form Styles */
+        .checkout-form h1 {
+            font-size: 24px;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            color: var(--text-color);
+        }
+
+        .checkout-form h2 {
+            font-size: 18px;
+            margin: 25px 0 15px;
+            color: var(--text-color);
+        }
+
+        .checkout-form h3 {
+            font-size: 16px;
+            margin: 20px 0 10px;
+            color: var(--text-color);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--text-color);
+        }
+
+        input[type="text"],
+        input[type="tel"],
+        input[type="email"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 4px;
+            font-size: 14px;
+            background-color: #1e1e1e;
+            color: var(--text-color);
+        }
+
+        /* Country Section */
+        .country-section {
+            background: #1e1e1e;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+
+        .country-section h3 {
+            color: var(--text-color);
+        }
+
+        /* Order Summary */
+        .order-items {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        .order-items th {
+            text-align: left;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            font-weight: 600;
+            color: var(--text-color);
+        }
+
+        .order-items td {
+            padding: 15px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            vertical-align: middle;
+            color: var(--text-color);
+        }
+
+        .product-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .product-info img {
+            width: 50px;
+            height: 50px;
+            object-fit: cover;
+            border-radius: 4px;
+        }
+
+        /* Summary Rows */
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            color: var(--text-color);
+        }
+
+        .total-row {
+            font-weight: 600;
+            font-size: 18px;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            color: var(--text-color);
+        }
+
+        /* Payment Methods */
+        .payment-methods {
+            margin-top: 30px;
+        }
+
+        .payment-option {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            padding: 15px;
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 4px;
+            background-color: #1e1e1e;
+        }
+
+        .payment-option input {
+            margin-right: 10px;
+        }
+
+        .payment-option label {
+            color: var(--text-color);
+            cursor: pointer;
+        }
+
+        /* Terms */
+        .terms-checkbox {
+            margin: 20px 0;
+            display: flex;
+            align-items: center;
+        }
+
+        .terms-checkbox input {
+            margin-right: 10px;
+        }
+
+        .terms-checkbox label {
+            font-size: 0.9rem;
+            color: #aaa;
+        }
+
+        /* Buttons */
+        .payment-btn {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            text-align: center;
+            margin-top: 20px;
+            transition: all 0.3s;
+        }
+
+        .bkash-btn {
+            background-color: #e2136e;
+            color: white;
+        }
+
+        .bkash-btn:hover {
+            background-color: #c0105d;
+        }
+
+        /* Additional Info */
+        .additional-info {
+            margin-top: 30px;
+        }
+
+        .additional-info label {
+            color: var(--text-color);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .checkout-container {
+                flex-direction: column;
+            }
+            
+            .billing-section,
+            .order-summary {
+                margin-top: 50px;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .checkout-page {
+                padding: 100px 0 40px;
+            }
+            
+            .billing-section,
+            .order-summary {
+                padding: 20px;
+            }
+        }
+    </style>
 </head>
 <body>
     <!-- Same Header as index.html -->
@@ -33,260 +273,15 @@
             </button>
         </div>
     </nav>
-    <style>
-        /* Checkout Page Styles */
-/* ===== CHECKOUT PAGE STYLES ===== */
-.checkout-page {
-    padding: 120px 0 60px;
-    background-color: var(--bg-color);
-    color: var(--text-color);
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    line-height: 1.6;
-}
-
-.checkout-container {
-    display: flex;
-    gap: 80px;
-    margin-top: 30px;
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 20px;
-}
-
-.billing-section {
-    flex: 2;
-    background: var(--dark);
-    padding: 25px;
-    border-radius: 8px;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-    margin-top: 100px;
-}
-
-.order-summary {
-    flex: 1;
-    background: var(--dark);
-    padding: 25px;
-    border-radius: 8px;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-    margin-top: 100px;
-}
-
-/* Form Styles */
-.checkout-form h1 {
-    font-size: 24px;
-    margin-bottom: 25px;
-    padding-bottom: 15px;
-    border-bottom: 1px solid rgba(255,255,255,0.1);
-    color: var(--text-color);
-}
-
-.checkout-form h2 {
-    font-size: 18px;
-    margin: 25px 0 15px;
-    color: var(--text-color);
-}
-
-.checkout-form h3 {
-    font-size: 16px;
-    margin: 20px 0 10px;
-    color: var(--text-color);
-}
-
-.form-group {
-    margin-bottom: 20px;
-}
-
-.form-group label {
-    display: block;
-    margin-bottom: 8px;
-    font-weight: 600;
-    color: var(--text-color);
-}
-
-input[type="text"],
-input[type="tel"],
-input[type="email"],
-select,
-textarea {
-    width: 100%;
-    padding: 12px;
-    border: 1px solid rgba(255,255,255,0.2);
-    border-radius: 4px;
-    font-size: 14px;
-    background-color: #1e1e1e;
-    color: var(--text-color);
-}
-
-/* Country Section */
-.country-section {
-    background: #1e1e1e;
-    padding: 15px;
-    border-radius: 4px;
-    margin-bottom: 20px;
-}
-
-.country-section h3 {
-    color: var(--text-color);
-}
-
-/* Order Summary */
-.order-items {
-    width: 100%;
-    border-collapse: collapse;
-    margin-bottom: 20px;
-}
-
-.order-items th {
-    text-align: left;
-    padding: 10px 0;
-    border-bottom: 1px solid rgba(255,255,255,0.1);
-    font-weight: 600;
-    color: var(--text-color);
-}
-
-.order-items td {
-    padding: 15px 0;
-    border-bottom: 1px solid rgba(255,255,255,0.1);
-    vertical-align: middle;
-    color: var(--text-color);
-}
-
-.product-info {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.product-info img {
-    width: 50px;
-    height: 50px;
-    object-fit: cover;
-    border-radius: 4px;
-}
-
-/* Summary Rows */
-.summary-row {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 10px;
-    color: var(--text-color);
-}
-
-.total-row {
-    font-weight: 600;
-    font-size: 18px;
-    margin-top: 15px;
-    padding-top: 15px;
-    border-top: 1px solid rgba(255,255,255,0.1);
-    color: var(--text-color);
-}
-
-/* Payment Methods */
-.payment-methods {
-    margin-top: 30px;
-}
-
-.payment-option {
-    display: flex;
-    align-items: center;
-    margin-bottom: 15px;
-    padding: 15px;
-    border: 1px solid rgba(255,255,255,0.1);
-    border-radius: 4px;
-    background-color: #1e1e1e;
-}
-
-.payment-option input {
-    margin-right: 10px;
-}
-
-.payment-option label {
-    color: var(--text-color);
-    cursor: pointer;
-}
-
-/* Terms */
-.terms-checkbox {
-    margin: 20px 0;
-    display: flex;
-    align-items: center;
-}
-
-.terms-checkbox input {
-    margin-right: 10px;
-}
-
-.terms-checkbox label {
-    font-size: 0.9rem;
-    color: #aaa;
-}
-
-/* Buttons */
-.payment-btn {
-    display: block;
-    width: 100%;
-    padding: 15px;
-    border: none;
-    border-radius: 4px;
-    font-size: 16px;
-    font-weight: 600;
-    cursor: pointer;
-    text-align: center;
-    margin-top: 20px;
-    transition: all 0.3s;
-}
-
-.bkash-btn {
-    background-color: #e2136e;
-    color: white;
-}
-
-.bkash-btn:hover {
-    background-color: #c0105d;
-}
-
-/* Additional Info */
-.additional-info {
-    margin-top: 30px;
-}
-
-.additional-info label {
-    color: var(--text-color);
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-    .checkout-container {
-        flex-direction: column;
-    }
-    
-    .billing-section,
-    .order-summary {
-        margin-top: 50px;
-    }
-}
-
-@media (max-width: 576px) {
-    .checkout-page {
-        padding: 100px 0 40px;
-    }
-    
-    .billing-section,
-    .order-summary {
-        padding: 20px;
-    }
-}
-
-    </style>
 
     <!-- Checkout Content -->
     <div style="margin-top: 50px;padding-bottom: 100px;" class="container">
-        <div  class="checkout-container">
+        <div class="checkout-container">
             <!-- Billing Section -->
             <div style="margin-top: 100px;" class="billing-section">
-                <h1 >BILLING & SHIPPING</h1>
+                <h1>BILLING & SHIPPING</h1>
                 
-                <form  id="checkout-form">
+                <form id="checkout-form">
                     <div class="form-group">
                         <label for="first-name">First name *</label>
                         <input type="text" id="first-name" required>
@@ -339,9 +334,10 @@ textarea {
                         <input type="email" id="email" required>
                     </div>
                     
-                    
-                    
-                    
+                    <div class="additional-info">
+                        <label for="order-notes">Order notes (optional)</label>
+                        <textarea id="order-notes" rows="4" placeholder="Notes about your order, e.g. special notes for delivery"></textarea>
+                    </div>
                 </form>
             </div>
             
@@ -363,17 +359,12 @@ textarea {
                 
                 <div class="summary-row">
                     <span>Subtotal</span>
-                    <span id="subtotal">1,100.00৳</span>
-                </div>
-                
-                <div class="summary-row">
-                    
-                    
+                    <span id="subtotal">0.00৳</span>
                 </div>
                 
                 <div class="summary-row total-row">
                     <span>Total</span>
-                    <span id="total">1,100.00৳</span>
+                    <span id="total">0.00৳</span>
                 </div>
                 
                 <div class="payment-methods">
@@ -387,10 +378,7 @@ textarea {
                     <div class="payment-option">
                         <input type="radio" id="sslcommerz" name="payment" value="sslcommerz">
                         <label for="sslcommerz">Pay Online (Credit/Debit Card/MobileBanking/NetBanking/bKash)</label>
-                        
                     </div>
-                    
-                    
                     
                     <div class="terms-checkbox">
                         <input type="checkbox" id="terms" required>
@@ -398,16 +386,36 @@ textarea {
                     </div>
                     
                     <button type="submit" form="checkout-form" class="payment-btn bkash-btn">CONFIRM ORDER</button>
-                    
                 </div>
             </div>
         </div>
     </div>
     
     <!-- Footer -->
+    <!-- Footer (Same as other pages) -->
     <footer class="footer">
         <div class="container">
-            <!-- Your existing footer content -->
+            <div class="footer-section">
+                <h3>TechMatts</h3>
+                <p>Your one-stop shop for premium PC accessories that combine functionality with style.</p>
+            </div>
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="shop.html">Shop</a></li>
+                    <li><a href="contact.html">Contact</a></li>
+                    <li><a href="login.html">Login</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Contact Us</h3>
+                <p>Email: info@techmatts.com</p>
+                <p>Phone: (123) 456-7890</p>
+            </div>
+        </div>
+        <div class="copyright">
+            <p>&copy; 2023 TechMatts. All rights reserved.</p>
         </div>
     </footer>
 
@@ -438,6 +446,10 @@ textarea {
                 }).join('');
             } else {
                 orderItemsList.innerHTML = '<tr><td colspan="2">Your cart is empty</td></tr>';
+                // Redirect to shop if cart is empty
+                setTimeout(() => {
+                    window.location.href = 'shop.html';
+                }, 2000);
             }
             
             // Update totals
@@ -448,7 +460,7 @@ textarea {
             const cartCount = cart.reduce((total, item) => total + item.quantity, 0);
             document.querySelector('.cart-count').textContent = cartCount;
             
-            // Form validation
+            // Form validation and submission
             document.getElementById('checkout-form').addEventListener('submit', function(e) {
                 e.preventDefault();
                 
@@ -487,19 +499,21 @@ textarea {
                         items: cart,
                         paymentMethod: document.querySelector('input[name="payment"]:checked').value,
                         subtotal: subtotal,
-                        total: subtotal
+                        total: subtotal,
+                        orderNumber: 'ORD-' + Date.now().toString().slice(-6)
                     };
                     
-                    console.log('Order data:', orderData); // For debugging
+                    // Save order data to sessionStorage
+                    sessionStorage.setItem('orderData', JSON.stringify(orderData));
                     
-                    // In a real implementation, you would send this to your backend
-                    alert('Order submitted successfully! Redirecting to payment...');
-                    
-                    // Redirect to payment gateway
-                    if (orderData.paymentMethod === 'bkash') {
-                        // window.location.href = 'https://www.bkash.com/checkout';
+                    // Redirect based on payment method
+                    const paymentMethod = document.querySelector('input[name="payment"]:checked').value;
+                    if (paymentMethod === 'bkash') {
+                        window.location.href = 'bkash-payment.html';
                     } else {
-                        // window.location.href = 'https://sslcommerz.com/checkout';
+                        // For other payment methods (demo only)
+                        alert('Other payment methods not implemented in this demo. Redirecting to bKash.');
+                        window.location.href = 'bkash-payment.html';
                     }
                 }
             });

@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order History | TechMatts</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* Order History Styles */
+        .order-history-page {
+            padding: 120px 0 60px;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 70vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .page-title {
+          padding-top: 10px;
+          padding-bottom: 5px;
+            font-size: 40px;
+            font-weight:700;
+            margin-bottom: 40px;
+            border-bottom:solid white 1px;
+            padding-bottom: 15px;
+            border-radius: 10px;
+            color: white;
+
+        }
+
+        /* Order List */
+        .order-list {
+            display: grid;
+            gap: 30px;
+        }
+
+        .order-card {
+            background: #1e1e1e;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+
+        .order-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .order-number {
+            font-weight: bold;
+            font-size: 18px;
+            color: white;
+        }
+
+        .order-date {
+            color: #aaa;
+            font-size: 14px;
+        }
+
+        .order-product {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .product-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .product-image {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 4px;
+        }
+
+        .product-name {
+            font-weight: 500;
+            color: white;
+        }
+
+        .product-price {
+            font-weight: bold;
+            color: #e2136e;
+        }
+
+        .view-btn {
+            background: #121212;
+            color: white;
+            border: 1px solid white;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 15px;
+        }
+
+        .view-btn:hover {
+            background: #333;
+        }
+
+        hr {
+            border: none;
+            height: 1px;
+            background-color: rgba(255,255,255,0.1);
+            margin: 15px 0;
+        }
+
+        /* Order Detail View */
+        .order-detail-view {
+            display: none;
+            background: #1e1e1e;
+            border-radius: 8px;
+            padding: 25px;
+            margin-top: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+
+        .detail-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .detail-title {
+            font-size: 24px;
+            font-weight: 300;
+            color: white;
+        }
+
+        .order-status {
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .status-finished {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .status-processing {
+            background: #2196F3;
+            color: white;
+        }
+
+        .status-delivered {
+            background: #FF9800;
+            color: white;
+        }
+
+        .detail-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        @media (max-width: 768px) {
+            .detail-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .address-section, .summary-section {
+            background: #121212;
+            padding: 20px;
+            border-radius: 6px;
+        }
+
+        .section-title {
+            font-size: 18px;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            color: white;
+        }
+
+        .address-details p {
+            margin: 8px 0;
+            line-height: 1.5;
+            color: #aaa;
+        }
+
+        .address-details strong {
+            color: white;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            color: white;
+        }
+
+        .summary-label {
+            color: #aaa;
+        }
+
+        .summary-value {
+            font-weight: 500;
+        }
+
+        .total-row {
+            font-weight: bold;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+
+        /* Products Table */
+        .products-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 30px 0;
+        }
+
+        .products-table th {
+            text-align: left;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            font-weight: 600;
+            color: white;
+        }
+
+        .products-table td {
+            padding: 15px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            vertical-align: middle;
+            color: white;
+        }
+
+        .product-cell {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .product-cell img {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 4px;
+        }
+
+        /* Comments Section */
+        .comments-section {
+            margin-top: 30px;
+            background: #121212;
+            padding: 20px;
+            border-radius: 6px;
+        }
+
+        .comments-title {
+            font-size: 18px;
+            margin-bottom: 15px;
+            color: white;
+        }
+
+        .comments-content {
+            color: #aaa;
+            line-height: 1.5;
+        }
+
+        /* Back Button */
+        .back-btn {
+            display: inline-block;
+            margin-top: 30px;
+            background: #121212;
+            color: white;
+            border: 1px solid white;
+            padding: 10px 20px;
+            border-radius: 4px;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        .back-btn:hover {
+            background: #333;
+        }
+
+        /* Footer Styles */
+        .footer {
+            background-color: #1e1e1e;
+            padding: 40px 0 20px;
+            color: #aaa;
+        }
+
+        .footer .container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+        }
+
+        .footer-section h3 {
+            color: white;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+
+        .footer-section p {
+            line-height: 1.6;
+            margin-bottom: 10px;
+        }
+
+        .footer-section ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .footer-section li {
+            margin-bottom: 10px;
+        }
+
+        .footer-section a {
+            color: #aaa;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .footer-section a:hover {
+            color: white;
+        }
+
+        .copyright {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Same Header as Other Pages -->
+    <nav class="navbar">
+        <div class="container">
+            <a href="index.html" class="logo">TechMatts</a>
+            <div class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="shop.html">Shop</a>
+                <a href="contact.html">Contact</a>
+                <a href="order.html">Order</a>
+                <a href="login.html">Login/Register</a>
+                <a href="cart.html" class="icon-link cart-icon" id="cart-icon-link">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span class="cart-count">0</span>
+                </a>
+            </div>
+            <button class="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Order History Content -->
+    <main class="order-history-page">
+        <div class="container">
+            <h1 class="page-title">Order History</h1>
+            
+            <!-- Order List -->
+            <div class="order-list" id="order-list">
+                <!-- Dynamically filled by JavaScript -->
+            </div>
+            
+            <!-- Order Detail View -->
+            <div class="order-detail-view" id="order-detail">
+                <div class="detail-header">
+                    <h2 class="detail-title">Order Information #<span id="detail-order-number">271073</span></h2>
+                    <span class="order-status status-finished" id="order-status">Finished</span>
+                </div>
+                
+                <div class="detail-grid">
+                    <div class="address-section">
+                        <h3 class="section-title">Shipping Address</h3>
+                        <div class="address-details" id="shipping-address">
+                            <!-- Filled by JavaScript -->
+                        </div>
+                    </div>
+                    
+                    <div class="summary-section">
+                        <h3 class="section-title">Order Summary</h3>
+                        <div class="summary-details">
+                            <div class="summary-row">
+                                <span class="summary-label">Sub-Total</span>
+                                <span class="summary-value" id="subtotal">2,000৳</span>
+                            </div>
+                            <div class="summary-row">
+                                <span class="summary-label">Home Delivery</span>
+                                <span class="summary-value" id="delivery">60৳</span>
+                            </div>
+                            <div class="summary-row total-row">
+                                <span class="summary-label">Total</span>
+                                <span class="summary-value" id="total">2,060৳</span>
+                            </div>
+                            <div class="summary-row">
+                                <span class="summary-label">Paid</span>
+                                <span class="summary-value" id="paid">2,060৳</span>
+                            </div>
+                            <div class="summary-row">
+                                <span class="summary-label">Due</span>
+                                <span class="summary-value" id="due">0৳</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <h3 class="section-title">Products</h3>
+                <table class="products-table">
+                    <thead>
+                        <tr>
+                            <th>Product Name</th>
+                            <th>Quantity</th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+                    <tbody id="order-products">
+                        <!-- Filled by JavaScript -->
+                    </tbody>
+                </table>
+                
+                <div class="comments-section">
+                    <h3 class="comments-title">Order Comments</h3>
+                    <p class="comments-content" id="order-comments">Please deliver it as soon as possible.</p>
+                </div>
+                
+                <a href="#" class="back-btn" id="back-to-orders">
+                    <i class="fas fa-arrow-left"></i> Back to Orders
+                </a>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-section">
+                <h3>TechMatts</h3>
+                <p>Your one-stop shop for premium PC accessories that combine functionality with style.</p>
+            </div>
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="shop.html">Shop</a></li>
+                    <li><a href="contact.html">Contact</a></li>
+                    <li><a href="login.html">Login</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Contact Us</h3>
+                <p>Email: info@techmatts.com</p>
+                <p>Phone: (123) 456-7890</p>
+            </div>
+        </div>
+        <div class="copyright">
+            <p>&copy; 2023 TechMatts. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Sample order data (in a real app, this would come from a database)
+        const orders = [
+            {
+                id: "605390",
+                date: "04 Mar 2025",
+                status: "Processing",
+                products: [
+                    {
+                        name: "AOC AGON Q2764F 27\" 180Hz 2K QHD Fast IPS Gaming Monitor",
+                        image: "images/monitor.jpg",
+                        price: 36500,
+                        quantity: 1
+                    }
+                ],
+                subtotal: 36500,
+                delivery: 150,
+                total: 36650,
+                paid: 36650,
+                due: 0,
+                customer: {
+                    name: "Faiyaz Mahmud",
+                    address: "Toma Rahman Monjil 38, khilgaon policefari",
+                    city: "Dhaka",
+                    country: "Bangladesh",
+                    mobile: "01757569462"
+                },
+                comments: ""
+            },
+            {
+                id: "534538",
+                date: "22 Oct 2024",
+                status: "Delivered",
+                products: [
+                    {
+                        name: "Asus VivoBook Go 15 E1504FA Ryzen 5 7520U 15.6\" FHD Laptop",
+                        image: "images/laptop.jpg",
+                        price: 72380,
+                        quantity: 1
+                    }
+                ],
+                subtotal: 72380,
+                delivery: 150,
+                total: 72530,
+                paid: 72530,
+                due: 0,
+                customer: {
+                    name: "Faiyaz Mahmud",
+                    address: "Toma Rahman Monjil 38, khilgaon policefari",
+                    city: "Dhaka",
+                    country: "Bangladesh",
+                    mobile: "01757569462"
+                },
+                comments: ""
+            },
+            {
+                id: "271073",
+                date: "15 Dec 2022",
+                status: "Finished",
+                products: [
+                    {
+                        name: "Logitech F310 USB Gamepad",
+                        image: "images/gamepad.jpg",
+                        price: 2000,
+                        quantity: 1
+                    }
+                ],
+                subtotal: 2000,
+                delivery: 60,
+                total: 2060,
+                paid: 2060,
+                due: 0,
+                customer: {
+                    name: "Faiyaz Mahmud",
+                    address: "Toma Rahman Monjil 38, khilgaon policefari",
+                    city: "Dhaka",
+                    country: "Bangladesh",
+                    mobile: "01757569462"
+                },
+                comments: "Please deliver it as soon as possible."
+            }
+        ];
+
+        // Load orders when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            renderOrderList();
+            updateCartCounter();
+
+            // Check if we should show a specific order detail
+            const urlParams = new URLSearchParams(window.location.search);
+            const orderId = urlParams.get('order');
+            if (orderId) {
+                showOrderDetail(orderId);
+            }
+
+            // Back button event
+            document.getElementById('back-to-orders').addEventListener('click', function(e) {
+                e.preventDefault();
+                hideOrderDetail();
+                window.history.pushState({}, '', 'order.html');
+            });
+        });
+
+        // Render the list of orders
+        function renderOrderList() {
+            const orderList = document.getElementById('order-list');
+            
+            if (orders.length === 0) {
+                orderList.innerHTML = '<p>You have no orders yet. <a href="shop.html">Start shopping!</a></p>';
+                return;
+            }
+
+            orderList.innerHTML = orders.map(order => `
+                <div class="order-card" data-id="${order.id}">
+                    <div class="order-header">
+                        <div class="order-number">Order# ${order.id}</div>
+                        <div class="order-date">Date Added: ${order.date}</div>
+                    </div>
+                    <hr>
+                    ${order.products.map(product => `
+                        <div class="order-product">
+                            <div class="product-info">
+                                <img src="${product.image}" alt="${product.name}" class="product-image">
+                                <div>
+                                    <div class="product-name">${product.name}</div>
+                                    <div class="product-price">${product.price.toLocaleString()}৳</div>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('')}
+                    <button class="view-btn" data-id="${order.id}">View</button>
+                </div>
+            `).join('');
+
+            // Add event listeners to view buttons
+            document.querySelectorAll('.view-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const orderId = this.getAttribute('data-id');
+                    showOrderDetail(orderId);
+                    window.history.pushState({}, '', `order.html?order=${orderId}`);
+                });
+            });
+        }
+
+        // Show detailed view for a specific order
+        function showOrderDetail(orderId) {
+            const order = orders.find(o => o.id === orderId);
+            if (!order) return;
+
+            // Update order details
+            document.getElementById('detail-order-number').textContent = order.id;
+            document.getElementById('order-status').textContent = order.status;
+            document.getElementById('order-status').className = `order-status status-${order.status.toLowerCase()}`;
+            
+            // Update shipping address
+            document.getElementById('shipping-address').innerHTML = `
+                <p><strong>${order.customer.name}</strong></p>
+                <p>${order.customer.address}</p>
+                <p>${order.customer.city}</p>
+                <p>${order.customer.country}</p>
+                <p>Mobile: ${order.customer.mobile}</p>
+            `;
+            
+            // Update order summary
+            document.getElementById('subtotal').textContent = `${order.subtotal.toLocaleString()}৳`;
+            document.getElementById('delivery').textContent = `${order.delivery.toLocaleString()}৳`;
+            document.getElementById('total').textContent = `${order.total.toLocaleString()}৳`;
+            document.getElementById('paid').textContent = `${order.paid.toLocaleString()}৳`;
+            document.getElementById('due').textContent = `${order.due.toLocaleString()}৳`;
+            
+            // Update products
+            const productsTable = document.getElementById('order-products');
+            productsTable.innerHTML = order.products.map(product => `
+                <tr>
+                    <td>
+                        <div class="product-cell">
+                            <img src="${product.image}" alt="${product.name}">
+                            <span>${product.name}</span>
+                        </div>
+                    </td>
+                    <td>${product.quantity}</td>
+                    <td>${(product.price * product.quantity).toLocaleString()}৳</td>
+                </tr>
+            `).join('');
+            
+            // Update comments
+            document.getElementById('order-comments').textContent = order.comments || 'No comments';
+            
+            // Show detail view and hide list
+            document.getElementById('order-list').style.display = 'none';
+            document.getElementById('order-detail').style.display = 'block';
+        }
+
+        // Hide detail view and show list
+        function hideOrderDetail() {
+            document.getElementById('order-list').style.display = 'grid';
+            document.getElementById('order-detail').style.display = 'none';
+        }
+
+        // Update cart counter
+        function updateCartCounter() {
+            const cart = JSON.parse(localStorage.getItem('cart')) || [];
+            const count = cart.reduce((total, item) => total + item.quantity, 0);
+            document.querySelectorAll('.cart-count').forEach(el => el.textContent = count);
+        }
+
+        // Handle browser back/forward
+        window.addEventListener('popstate', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const orderId = urlParams.get('order');
+            
+            if (orderId) {
+                showOrderDetail(orderId);
+            } else {
+                hideOrderDetail();
+            }
+        });
+    </script>
+</body>
+</html>

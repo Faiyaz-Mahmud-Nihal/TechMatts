@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pay with bKash | TechMatts</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* Payment Gateway Styles */
+        .payment-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0,0,0,0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        
+        .payment-container {
+            background-color: white;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 400px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            animation: fadeIn 0.3s ease-out;
+        }
+        
+        .payment-header {
+            background-color: #e2136e;
+            color: white;
+            padding: 15px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 18px;
+        }
+        
+        .payment-body {
+            padding: 20px;
+            color: #333;
+        }
+        
+        .payment-step {
+            display: none;
+        }
+        
+        .payment-step.active {
+            display: block;
+        }
+        
+        .merchant-info {
+            text-align: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .merchant-info h3 {
+            margin: 0;
+            font-size: 16px;
+        }
+        
+        .merchant-info p {
+            margin: 5px 0;
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .amount-display {
+            font-size: 24px;
+            font-weight: bold;
+            text-align: center;
+            margin: 15px 0;
+            color: #333;
+        }
+        
+        .input-field {
+            margin-bottom: 15px;
+        }
+        
+        .input-field label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .input-field input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        
+        .account-number {
+            font-size: 14px;
+            color: #666;
+            text-align: center;
+            margin: 10px 0;
+        }
+        
+        .payment-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        
+        .payment-btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 4px;
+            font-weight: bold;
+            cursor: pointer;
+            flex: 1;
+            margin: 0 5px;
+            transition: background-color 0.3s;
+        }
+        
+        .close-btn {
+            background-color: #f0f0f0;
+            color: #333;
+        }
+        
+        .confirm-btn {
+            background-color: #e2136e;
+            color: white;
+        }
+        
+        .close-btn:hover {
+            background-color: #e0e0e0;
+        }
+        
+        .confirm-btn:hover {
+            background-color: #c0105d;
+        }
+        
+        .success-message {
+            text-align: center;
+            padding: 20px 0;
+        }
+        
+        .success-icon {
+            color: #4CAF50;
+            font-size: 50px;
+            margin-bottom: 15px;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Payment Gateway Overlay -->
+    <div class="payment-overlay">
+        <div class="payment-container">
+            <div class="payment-header">
+                bKash Payment
+            </div>
+            <div class="payment-body">
+                <!-- Step 1: Enter bKash Number -->
+                <div class="payment-step active" id="step1">
+                    <div class="merchant-info">
+                        <h3>TechMatts</h3>
+                        <p>Invoice: #<span id="invoice-number">1526</span></p>
+                    </div>
+                    <div class="amount-display">
+                        <span id="payment-amount">0.00</span>৳
+                    </div>
+                    <div class="input-field">
+                        <label for="bkash-number">Your bKash Account number</label>
+                        <input type="tel" id="bkash-number" placeholder="e.g. 01XXXXXXXXX" maxlength="11">
+                    </div>
+                    <p class="account-number">By clicking on Confirm, you are agreeing to the terms & conditions</p>
+                    <div class="payment-buttons">
+                        <button class="payment-btn close-btn" id="close-payment">CLOSE</button>
+                        <button class="payment-btn confirm-btn" id="confirm-step1">CONFIRM</button>
+                    </div>
+                </div>
+                
+                <!-- Step 2: Enter PIN -->
+                <div class="payment-step" id="step2">
+                    <div class="merchant-info">
+                        <h3>TechMatts</h3>
+                        <p>Invoice: #<span id="invoice-number-step2">1526</span></p>
+                    </div>
+                    <div class="amount-display">
+                        <span id="payment-amount-step2">0.00</span>৳
+                    </div>
+                    <div class="input-field">
+                        <label>Enter PIN of your bKash Account number (<span id="masked-number">016 ** *** 283</span>)</label>
+                        <input type="password" id="bkash-pin" placeholder="Enter 5-digit PIN" maxlength="5">
+                    </div>
+                    <div class="payment-buttons">
+                        <button class="payment-btn close-btn" id="back-step2">CLOSE</button>
+                        <button class="payment-btn confirm-btn" id="confirm-step2">CONFIRM</button>
+                    </div>
+                </div>
+                
+                <!-- Step 3: Success Message -->
+                <div class="payment-step" id="step3">
+                    <div class="success-message">
+                        <div class="success-icon">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <h3>bKash Account verification successful</h3>
+                        <p>Redirecting to Merchant Website in <span id="countdown">3</span>s</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Get cart total from localStorage
+            const cart = JSON.parse(localStorage.getItem('cart')) || [];
+            const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            
+            // Set payment amount
+            document.getElementById('payment-amount').textContent = total.toFixed(2);
+            document.getElementById('payment-amount-step2').textContent = total.toFixed(2);
+            
+            // Generate random invoice number
+            const invoiceNumber = Math.floor(1000 + Math.random() * 9000);
+            document.getElementById('invoice-number').textContent = invoiceNumber;
+            document.getElementById('invoice-number-step2').textContent = invoiceNumber;
+            
+            // Step 1: Confirm bKash number
+            document.getElementById('confirm-step1').addEventListener('click', function() {
+                const bkashNumber = document.getElementById('bkash-number').value;
+                
+                if (bkashNumber.length !== 11 || !bkashNumber.startsWith('01')) {
+                    alert('Please enter a valid bKash number (11 digits starting with 01)');
+                    return;
+                }
+                
+                // Mask the number (show first 3 and last 3 digits)
+                const masked = bkashNumber.substring(0, 3) + ' ** *** ' + bkashNumber.substring(8);
+                document.getElementById('masked-number').textContent = masked;
+                
+                // Go to step 2
+                document.getElementById('step1').classList.remove('active');
+                document.getElementById('step2').classList.add('active');
+            });
+            
+            // Step 2: Confirm PIN
+            document.getElementById('confirm-step2').addEventListener('click', function() {
+                const pin = document.getElementById('bkash-pin').value;
+                
+                if (pin.length !== 5 || !/^\d+$/.test(pin)) {
+                    alert('Please enter a valid 5-digit PIN');
+                    return;
+                }
+                
+                // Go to step 3
+                document.getElementById('step2').classList.remove('active');
+                document.getElementById('step3').classList.add('active');
+                
+                // Start countdown
+                let seconds = 3;
+                const countdown = setInterval(function() {
+                    seconds--;
+                    document.getElementById('countdown').textContent = seconds;
+                    
+                    if (seconds <= 0) {
+                        clearInterval(countdown);
+                        // In a real implementation, you would process the payment here
+                        // For demo, we'll just redirect to a confirmation page
+                        window.location.href = 'payment-success.html';
+                    }
+                }, 1000);
+            });
+            
+            // Close button
+            document.getElementById('close-payment').addEventListener('click', function() {
+                // In a real implementation, you might want to close the modal
+                // For demo, we'll just go back
+                window.history.back();
+            });
+            
+            // Back button on step 2
+            document.getElementById('back-step2').addEventListener('click', function() {
+                document.getElementById('step2').classList.remove('active');
+                document.getElementById('step1').classList.add('active');
+            });
+        });
+    </script>
+</body>
+</html>
