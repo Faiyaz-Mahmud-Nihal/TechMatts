@@ -10,7 +10,6 @@
   <script src="products.js"></script>
   <script src="renderProducts.js"></script>
   <script src="cart.js"></script>
-  <link rel="shortcut icon" href="media/Logo/create-a-logo-for-my-website-the-weebsit_AqrFmCw0SiWsRMtLV8HPBw_6NSYBivoQg2-89jA-pvVVw.jpeg" type="image/x-icon">
 </head>
 
 <body>
@@ -22,8 +21,8 @@
         <a href="index.html">Home</a>
         <a href="shop.html">Shop</a>
         <a href="contact.html">Contact</a>
-        <a href="login.html">Login/Register</a>
-        <a href="wishlist.html" class="icon-link"><i class="far fa-heart"></i></a>
+        <a href="login.html" id="auth-link">Login/Register</a>
+        <a href="profile.html" id="auth-link">Profile</a>
         <div class="cart-icon">
           <a href="cart.html" id="cart-icon-link"><i class="fas fa-shopping-cart"></i></a>
           <span class="cart-count">0</span>
@@ -289,5 +288,27 @@
         });
     });
   </script>
+  <script>
+    // Update auth link based on login status
+    document.addEventListener('DOMContentLoaded', async function() {
+        try {
+            const response = await fetch('auth.php?action=check');
+            const data = await response.json();
+            
+            const authLink = document.getElementById('auth-link');
+            if (authLink) {
+                if (data.loggedIn) {
+                    authLink.textContent = data.email;
+                    authLink.href = 'logout.php';
+                } else {
+                    authLink.textContent = 'Login/Register';
+                    authLink.href = 'login.html';
+                }
+            }
+        } catch (error) {
+            console.error('Error checking login status:', error);
+        }
+    });
+</script>
 </body>
 </html>

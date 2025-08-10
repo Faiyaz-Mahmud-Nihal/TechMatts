@@ -7,7 +7,6 @@
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <script src="cart.js"></script>
-    <link rel="shortcut icon" href="media/Logo/create-a-logo-for-my-website-the-weebsit_AqrFmCw0SiWsRMtLV8HPBw_6NSYBivoQg2-89jA-pvVVw.jpeg" type="image/x-icon">
 </head>
 <body>
     <!-- Navigation Bar (Same as other pages) -->
@@ -20,7 +19,8 @@
                 <a href="contact.html">Contact</a>
                 <a href="order.html">Order</a>
                 
-                <a href="login.html" class="active">Login/Register</a>
+                <a href="login.html" id="auth-link">Login/Register</a>
+                <a href="profile.html">Profile</a>
                 <a href="cart.html" class="icon-link cart-icon">
                     <i class="fas fa-shopping-cart"></i>
                     <span class="cart-count">0</span>
@@ -122,7 +122,7 @@
         </div>
     </footer>
 
-    <script>
+    <!-- <script>
     // Mobile menu toggle
     const hamburger = document.querySelector('.hamburger');
     const navLinks = document.querySelector('.nav-links');
@@ -173,6 +173,148 @@
             });
         });
     });
-</script>
+</script> -->
+
+ <script>
+        // Mobile menu toggle
+        const hamburger = document.querySelector('.hamburger');
+        const navLinks = document.querySelector('.nav-links');
+        
+        hamburger.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+            hamburger.classList.toggle('active');
+        });
+
+        // Form toggle
+        document.querySelectorAll('.toggle-form').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const formToShow = e.target.getAttribute('data-form');
+                
+                if (formToShow === 'register') {
+                    document.querySelector('.auth-form').style.display = 'none';
+                    document.querySelector('.register-form').style.display = 'block';
+                } else {
+                    document.querySelector('.auth-form').style.display = 'block';
+                    document.querySelector('.register-form').style.display = 'none';
+                }
+            });
+        });
+
+        // UPDATED LOGIN FORM SUBMISSION - THIS IS THE ONLY CHANGE NEEDED
+        document.querySelector('.login-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            
+            try {
+                const response = await fetch('auth.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: `action=login&email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`
+                });
+                
+                const data = await response.json();
+                console.log("Login response:", data); // For debugging
+                
+                if (data.success) {
+                    // Use the redirect URL provided by the server
+                    if (data.redirect) {
+                        window.location.href = data.redirect;
+                    } else {
+                        // Fallback if redirect isn't provided
+                        window.location.href = 'index.html';
+                    }
+                } else {
+                    alert(data.message);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred during login.');
+            }
+        });
+
+        // [ALL YOUR EXISTING REGISTER FORM AND OTHER FUNCTIONS REMAIN EXACTLY THE SAME]
+        document.querySelector('.register-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const name = document.getElementById('reg-name').value;
+            const email = document.getElementById('reg-email').value;
+            const phone = document.getElementById('reg-phone').value;
+            const password = document.getElementById('reg-password').value;
+            const confirm = document.getElementById('reg-confirm').value;
+            
+            try {
+                const response = await fetch('auth.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: `action=register&name=${encodeURIComponent(name)}&email=${encodeURIComponent(email)}&phone=${encodeURIComponent(phone)}&password=${encodeURIComponent(password)}&confirm=${encodeURIComponent(confirm)}`
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    alert(data.message);
+                    window.location.href = 'index.html';
+                } else {
+                    alert(data.message);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred during registration.');
+            }
+        });
+
+        // Check login status and update UI
+        async function checkLoginStatus() {
+            try {
+                const response = await fetch('auth.php?action=check');
+                const data = await response.json();
+                
+                if (data.loggedIn) {
+                    const loginLink = document.querySelector('a[href="login.html"]');
+                    if (loginLink) {
+                        loginLink.textContent = data.email;
+                        loginLink.href = 'profile.html';
+                    }
+                }
+            } catch (error) {
+                console.error('Error checking login status:', error);
+            }
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            checkLoginStatus();
+            updateCartCounter();
+        });
+    </script>
+    <script>
+        // Update auth link based on login status
+        document.addEventListener('DOMContentLoaded', async function() {
+            try {
+                const response = await fetch('auth.php?action=check');
+                const data = await response.json();
+                
+                const authLink = document.getElementById('auth-link');
+                if (authLink) {
+                    if (data.loggedIn) {
+                        authLink.textContent = data.email;
+                        authLink.href = 'logout.php';
+                    } else {
+                        authLink.textContent = 'Login/Register';
+                        authLink.href = 'login.html';
+                    }
+                }
+            } catch (error) {
+                console.error('Error checking login status:', error);
+            }
+        });
+    </script>
 </body>
 </html>
