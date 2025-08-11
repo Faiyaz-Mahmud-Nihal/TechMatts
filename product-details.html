@@ -7,8 +7,6 @@
   <title>TechMatts - Product Details</title>
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-  <script src="products.js"></script>
-  <script src="renderProducts.js"></script>
   <script src="cart.js"></script>
 </head>
 
@@ -144,142 +142,171 @@
 
   <script>
     // Wait for DOM and all resources to be fully loaded
-    window.addEventListener('load', function() {
+    window.addEventListener('load', async function() {
         // Initialize cart counter
         updateCartCounter();
 
         // Get product ID from URL
         const urlParams = new URLSearchParams(window.location.search);
         const productId = urlParams.get('id');
-        const product = products.find(p => p.id === productId);
+        
+        try {
+            const response = await fetch(`get_product.php?id=${productId}`);
+            const product = await response.json();
 
-        if (!product) {
-            console.error('Product not found with ID:', productId);
-            document.querySelector('.product-detail-container').innerHTML = '<div class="error">Product not found</div>';
-            return;
-        }
-
-        // Update breadcrumbs
-        document.getElementById('breadcrumb-category').textContent = product.category === 'pcbuild' ? 'PC Builds' : 'Mousepads';
-        document.getElementById('breadcrumb-product').textContent = product.name;
-
-        // Update product details
-        document.title = `TechMatts - ${product.name}`;
-        document.getElementById('product-title').textContent = product.name;
-        document.getElementById('product-price').textContent = product.priceRange || `${product.price.toFixed(2)}৳`;
-
-        // Main image and thumbnails
-        const mainImg = document.getElementById('main-product-image');
-        mainImg.src = product.image;
-        mainImg.alt = product.name;
-
-        // Thumbnails
-        const thumbsContainer = document.querySelector('.thumbnails');
-        thumbsContainer.innerHTML = product.thumbnails.map((thumb, i) => `
-            <div class="thumbnail ${i === 0 ? 'active' : ''}" data-image="${thumb}">
-                <img src="${thumb}" alt="${product.name} - View ${i+1}">
-            </div>
-        `).join('');
-
-        // Thumbnail click handler
-        thumbsContainer.addEventListener('click', function(e) {
-            const thumb = e.target.closest('.thumbnail');
-            if (!thumb) return;
-            
-            document.querySelectorAll('.thumbnail').forEach(t => t.classList.remove('active'));
-            thumb.classList.add('active');
-            mainImg.src = thumb.dataset.image;
-        });
-
-        // Product specs/features
-        const specsList = document.getElementById('product-specs');
-        if (product.category === 'pcbuild') {
-            specsList.innerHTML = product.specs.map(spec => `<li>${spec}</li>`).join('');
-            document.getElementById('size-options-container').style.display = 'none';
-        } else {
-            specsList.innerHTML = `
-                <li><strong>Type:</strong> ${product.type}</li>
-                <li><strong>Size:</strong> <span id="selected-size">${product.sizes[0].dimensions}</span></li>
-                ${product.features.map(feat => `<li>${feat}</li>`).join('')}
-            `;
-            
-            // Size buttons
-            const sizeButtonsContainer = document.getElementById('size-buttons-container');
-            sizeButtonsContainer.innerHTML = product.sizes.map((size, i) => `
-                <button class="size-btn ${i === 0 ? 'active' : ''}" 
-                        data-size="${size.dimensions}" 
-                        data-sku="${size.sku}">
-                    ${size.dimensions}
-                </button>
-            `).join('');
-            
-            // Size selection handler
-            sizeButtonsContainer.addEventListener('click', function(e) {
-                const btn = e.target.closest('.size-btn');
-                if (!btn) return;
-                
-                document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                document.getElementById('selected-size').textContent = btn.dataset.size;
-            });
-        }
-
-        // Meta information
-        document.getElementById('product-sku').innerHTML = `<strong>SKU:</strong> ${product.sizes ? product.sizes[0].sku : product.id}`;
-        document.getElementById('product-categories').innerHTML = `<strong>Categories:</strong> ${product.categories.join(', ')}`;
-        document.getElementById('product-tags').innerHTML = `<strong>Tags:</strong> ${product.tags.join(', ')}`;
-
-        // Quantity handler
-        document.querySelector('.quantity-control').addEventListener('click', function(e) {
-            const qtyElement = this.querySelector('.quantity');
-            let qty = parseInt(qtyElement.textContent);
-            
-            if (e.target.classList.contains('minus') && qty > 1) {
-                qty--;
-            } else if (e.target.classList.contains('plus')) {
-                qty++;
+            if (!product) {
+                console.error('Product not found with ID:', productId);
+                document.querySelector('.product-detail-container').innerHTML = '<div class="error">Product not found</div>';
+                return;
             }
-            qtyElement.textContent = qty;
-        });
 
-        // Add to cart handler
-        document.querySelector('.add-to-cart').addEventListener('click', function() {
-            const productData = {
-                id: product.id,
-                name: product.name,
-                price: product.price,
-                image: product.image,
-                size: product.sizes ? document.getElementById('selected-size').textContent : undefined,
-                quantity: parseInt(document.querySelector('.quantity').textContent) || 1
-            };
-            
-            addToCart(productData);
-            
-            // Visual feedback
-            const originalText = this.textContent;
-            this.textContent = 'Added!';
-            this.classList.add('added');
-            
-            setTimeout(() => {
-                this.textContent = originalText;
-                this.classList.remove('added');
-            }, 1000);
-        });
+            // Update breadcrumbs
+            document.getElementById('breadcrumb-category').textContent = product.category === 'pcbuild' ? 'PC Builds' : 'Mousepads';
+            document.getElementById('breadcrumb-product').textContent = product.name;
 
-        // Buy now handler
-        document.querySelector('.buy-now').addEventListener('click', function() {
-            const productData = {
-                id: product.id,
-                name: product.name,
-                price: product.price,
-                image: product.image,
-                size: product.sizes ? document.getElementById('selected-size').textContent : undefined,
-                quantity: parseInt(document.querySelector('.quantity').textContent) || 1
-            };
+            // Update product details
+            document.title = `TechMatts - ${product.name}`;
+            document.getElementById('product-title').textContent = product.name;
+            document.getElementById('product-price').textContent = product.price_range || `${parseFloat(product.price).toFixed(2)}৳`;
+
+            // Main image and thumbnails
+            const mainImg = document.getElementById('main-product-image');
+            mainImg.src = product.image;
+            mainImg.alt = product.name;
+
+            // Thumbnails
+            const thumbsContainer = document.querySelector('.thumbnails');
+            if (product.thumbnails && product.thumbnails.length > 0) {
+                thumbsContainer.innerHTML = product.thumbnails.map((thumb, i) => `
+                    <div class="thumbnail ${i === 0 ? 'active' : ''}" data-image="${thumb}">
+                        <img src="${thumb}" alt="${product.name} - View ${i+1}">
+                    </div>
+                `).join('');
+
+                // Thumbnail click handler
+                thumbsContainer.addEventListener('click', function(e) {
+                    const thumb = e.target.closest('.thumbnail');
+                    if (!thumb) return;
+                    
+                    document.querySelectorAll('.thumbnail').forEach(t => t.classList.remove('active'));
+                    thumb.classList.add('active');
+                    mainImg.src = thumb.dataset.image;
+                });
+            }
+
+            // Product specs/features
+            const specsList = document.getElementById('product-specs');
+            if (product.category === 'pcbuild') {
+                if (product.specs && product.specs.length > 0) {
+                    specsList.innerHTML = product.specs.map(spec => `<li>${spec}</li>`).join('');
+                }
+                document.getElementById('size-options-container').style.display = 'none';
+            } else {
+                let featuresHTML = `<li><strong>Type:</strong> ${product.type || 'N/A'}</li>`;
+                
+                if (product.sizes && product.sizes.length > 0) {
+                    featuresHTML += `<li><strong>Size:</strong> <span id="selected-size">${product.sizes[0].dimensions}</span></li>`;
+                }
+                
+                if (product.features && product.features.length > 0) {
+                    featuresHTML += product.features.map(feat => `<li>${feat}</li>`).join('');
+                }
+                
+                specsList.innerHTML = featuresHTML;
+                
+                // Size buttons
+                const sizeButtonsContainer = document.getElementById('size-buttons-container');
+                if (product.sizes && product.sizes.length > 0) {
+                    sizeButtonsContainer.innerHTML = product.sizes.map((size, i) => `
+                        <button class="size-btn ${i === 0 ? 'active' : ''}" 
+                                data-size="${size.dimensions}" 
+                                data-sku="${size.sku}">
+                            ${size.dimensions}
+                        </button>
+                    `).join('');
+                    
+                    // Size selection handler
+                    sizeButtonsContainer.addEventListener('click', function(e) {
+                        const btn = e.target.closest('.size-btn');
+                        if (!btn) return;
+                        
+                        document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('active'));
+                        btn.classList.add('active');
+                        document.getElementById('selected-size').textContent = btn.dataset.size;
+                        document.getElementById('product-sku').innerHTML = `<strong>SKU:</strong> ${btn.dataset.sku}`;
+                    });
+                }
+            }
+
+            // Meta information
+            document.getElementById('product-sku').innerHTML = `<strong>SKU:</strong> ${product.sizes && product.sizes.length > 0 ? product.sizes[0].sku : product.product_id}`;
             
-            addToCart(productData);
-            window.location.href = 'checkout.html';
-        });
+            if (product.categories && product.categories.length > 0) {
+                document.getElementById('product-categories').innerHTML = `<strong>Categories:</strong> ${product.categories.join(', ')}`;
+            }
+            
+            if (product.tags && product.tags.length > 0) {
+                document.getElementById('product-tags').innerHTML = `<strong>Tags:</strong> ${product.tags.join(', ')}`;
+            }
+
+            // Quantity handler
+            document.querySelector('.quantity-control').addEventListener('click', function(e) {
+                const qtyElement = this.querySelector('.quantity');
+                let qty = parseInt(qtyElement.textContent);
+                
+                if (e.target.classList.contains('minus') && qty > 1) {
+                    qty--;
+                } else if (e.target.classList.contains('plus')) {
+                    qty++;
+                }
+                qtyElement.textContent = qty;
+            });
+
+            // Add to cart handler
+            document.querySelector('.add-to-cart').addEventListener('click', function() {
+                const productData = {
+                    id: product.product_id,
+                    name: product.name,
+                    price: parseFloat(product.price),
+                    image: product.image,
+                    size: product.sizes && product.sizes.length > 0 ? document.getElementById('selected-size').textContent : undefined,
+                    quantity: parseInt(document.querySelector('.quantity').textContent) || 1
+                };
+                
+                addToCart(productData);
+                
+                // Visual feedback
+                const originalText = this.textContent;
+                this.textContent = 'Added!';
+                this.classList.add('added');
+                
+                setTimeout(() => {
+                    this.textContent = originalText;
+                    this.classList.remove('added');
+                }, 1000);
+            });
+
+            // Buy now handler
+            document.querySelector('.buy-now').addEventListener('click', function() {
+                const productData = {
+                    id: product.product_id,
+                    name: product.name,
+                    price: parseFloat(product.price),
+                    image: product.image,
+                    size: product.sizes && product.sizes.length > 0 ? document.getElementById('selected-size').textContent : undefined,
+                    quantity: parseInt(document.querySelector('.quantity').textContent) || 1
+                };
+                
+                addToCart(productData);
+                window.location.href = 'checkout.html';
+            });
+
+        } catch (error) {
+            console.error('Error loading product details:', error);
+            document.querySelector('.product-detail-container').innerHTML = `
+                <div class="error">Error loading product details. Please try again later.</div>
+            `;
+        }
 
         // Cart icon navigation
         document.getElementById('cart-icon-link').addEventListener('click', function(e) {
@@ -288,6 +315,7 @@
         });
     });
   </script>
+
   <script>
     // Update auth link based on login status
     document.addEventListener('DOMContentLoaded', async function() {
@@ -295,20 +323,22 @@
             const response = await fetch('auth.php?action=check');
             const data = await response.json();
             
-            const authLink = document.getElementById('auth-link');
-            if (authLink) {
-                if (data.loggedIn) {
-                    authLink.textContent = data.email;
-                    authLink.href = 'logout.php';
-                } else {
-                    authLink.textContent = 'Login/Register';
-                    authLink.href = 'login.html';
-                }
+            const authLinks = document.querySelectorAll('#auth-link');
+            if (authLinks.length > 0) {
+                authLinks.forEach(authLink => {
+                    if (data.loggedIn) {
+                        authLink.textContent = data.email;
+                        authLink.href = 'logout.php';
+                    } else {
+                        authLink.textContent = 'Login/Register';
+                        authLink.href = 'login.html';
+                    }
+                });
             }
         } catch (error) {
             console.error('Error checking login status:', error);
         }
     });
-</script>
+  </script>
 </body>
 </html>

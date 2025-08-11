@@ -15,35 +15,43 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-function renderAllProducts() {
+async function renderAllProducts() {
     const container = document.getElementById('products-container');
     if (!container) return;
     
-    container.innerHTML = products.map(product => `
-        <div class="product-card" data-category="${product.category}">
-            <a href="product-details.html?id=${product.id}">
-                <div class="product-image">
-                    <img src="${product.image}" alt="${product.name}">
+    try {
+        const response = await fetch('get_products.php');
+        const products = await response.json();
+        
+        container.innerHTML = products.map(product => `
+            <div class="product-card" data-category="${product.category}">
+                <a href="product-details.html?id=${product.product_id}">
+                    <div class="product-image">
+                        <img src="${product.image}" alt="${product.name}">
+                    </div>
+                    <h3>${product.name}</h3>
+                </a>
+                <div class="product-info">
+                    <p class="price">${product.price_range || product.price}৳</p>
+                    <button class="add-to-cart" 
+                        data-id="${product.product_id}"
+                        data-name="${product.name}"
+                        data-price="${product.price}"
+                        data-image="${product.image}">
+                        Add to Cart
+                    </button>
                 </div>
-                <h3>${product.name}</h3>
-            </a>
-            <div class="product-info">
-                <p class="price">${product.priceRange || product.price}৳</p>
-                <button class="add-to-cart" 
-                    data-id="${product.id}"
-                    data-name="${product.name}"
-                    data-price="${product.price}"
-                    data-image="${product.image}">
-                    Add to Cart
-                </button>
             </div>
-        </div>
-    `).join('');
-    
-    // Add cart event listeners
-    document.querySelectorAll('.add-to-cart').forEach(btn => {
-        btn.addEventListener('click', addToCartHandler);
-    });
+        `).join('');
+        
+        // Add cart event listeners
+        document.querySelectorAll('.add-to-cart').forEach(btn => {
+            btn.addEventListener('click', addToCartHandler);
+        });
+    } catch (error) {
+        console.error('Error loading products:', error);
+        container.innerHTML = '<div class="error">Error loading products. Please try again later.</div>';
+    }
 }
 
 function setupCategoryFilter() {

@@ -1,4 +1,7 @@
-<?php require_once 'admin_auth.php'; ?>
+<?php
+require_once 'admin_auth.php'; // Keep this for security
+require_once 'db_connection.php'; // Add this for database access
+?>
 
 <!DOCTYPE html>
 <html lang="en">
