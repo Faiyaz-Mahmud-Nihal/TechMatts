@@ -1,15 +1,15 @@
 <?php
-require_once 'admin_auth.php'; // Keep this for security
-require_once 'db_connection.php'; // Add this for database access
+require_once 'admin_auth.php';
+require_once 'db_connection.php';
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manage Products | TechMatts Admin</title>
+    <title>Manage Orders | TechMatts Admin</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <style>
+     <style>
     :root {
         --primary: #e2136e;
         --primary-dark: #c10e5d;
@@ -431,19 +431,77 @@ require_once 'db_connection.php'; // Add this for database access
             overflow-x: auto;
         }
     }
-</style>
+
+        
+        /* Additional styles for order status */
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            display: inline-block;
+        }
+        
+        .status-pending {
+            background: #FFF3CD;
+            color: #856404;
+        }
+        
+        .status-processing {
+            background: #CCE5FF;
+            color: #004085;
+        }
+        
+        .status-shipped {
+            background: #D4EDDA;
+            color: #155724;
+        }
+        
+        .status-delivered {
+            background: #D1ECF1;
+            color: #0C5460;
+        }
+        
+        .status-cancelled {
+            background: #F8D7DA;
+            color: #721C24;
+        }
+        
+        .status-select {
+            padding: 6px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        
+        .btn-update {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 6px 12px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+        
+        .btn-update:hover {
+            background-color: var(--primary-dark);
+        }
+    </style>
 </head>
 <body>
     <div class="admin-container">
-        <!-- Sidebar - Must match admin.php exactly -->
+        <!-- Sidebar -->
         <div class="admin-sidebar">
             <div class="admin-logo">
                 <h2>TechMatts Admin</h2>
             </div>
             <ul class="admin-menu">
                 <li><a href="admin.php"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
-                <li><a href="admin-products.php" class="active"><i class="fas fa-box-open"></i> Products</a></li>
-                <li><a href="admin-orders.php"><i class="fas fa-shopping-cart"></i> Orders</a></li>
+                <li><a href="admin-products.php"><i class="fas fa-box-open"></i> Products</a></li>
+                <li><a href="admin-orders.php" class="active"><i class="fas fa-shopping-cart"></i> Orders</a></li>
                 <li><a href="admin-users.php"><i class="fas fa-users"></i> Users</a></li>
                 <li><a href="admin-suppliers.php"><i class="fas fa-truck"></i> Suppliers</a></li>
                 <li><a href="logout.php"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
@@ -453,7 +511,7 @@ require_once 'db_connection.php'; // Add this for database access
         <!-- Main Content -->
         <div class="admin-content">
             <div class="admin-header">
-                <h1>Manage Products</h1>
+                <h1>Manage Orders</h1>
                 <div class="user-profile">
                     <img src="https://ui-avatars.com/api/?name=Admin&background=e2136e&color=fff" alt="Admin">
                     <span>Admin</span>
@@ -461,74 +519,68 @@ require_once 'db_connection.php'; // Add this for database access
             </div>
             
             <div class="search-filter-container">
-    <div class="search-box">
-        <i class="fas fa-search"></i>
-        <input type="text" id="search" placeholder="Search products...">
-    </div>
-    <select class="filter-select" id="category-filter">
-        <option value="">All Categories</option>
-        <option value="mousepad">Mousepads</option>
-        <option value="pcbuild">PC Builds</option>
-    </select>
-    <select class="filter-select" id="status-filter">
-        <option value="">All Statuses</option>
-        <option value="1">Active</option>
-        <option value="0">Inactive</option>
-    </select>
-    <a href="admin-add-product.php" class="btn-add">
-        <i class="fas fa-plus"></i> Add New Product
-    </a>
-</div>
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="search" placeholder="Search orders...">
+                </div>
+                <select class="filter-select" id="status-filter">
+                    <option value="">All Statuses</option>
+                    <option value="pending">Pending</option>
+                    <option value="processing">Processing</option>
+                    <option value="shipped">Shipped</option>
+                    <option value="delivered">Delivered</option>
+                    <option value="cancelled">Cancelled</option>
+                </select>
+            </div>
             
             <table class="product-table">
                 <thead>
                     <tr>
-                        <th>Image</th>
-                        <th>Name</th>
-                        <th>Category</th>
-                        <th>Price</th>
+                        <th>Order #</th>
+                        <th>Customer</th>
+                        <th>Date</th>
+                        <th>Amount</th>
                         <th>Status</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
-                <tbody id="products-table-body">
+                <tbody id="orders-table-body">
                     <?php
-                    require_once 'db_connection.php';
-                    
-                    // Fetch all products
+                    // Fetch all orders with customer information
                     $stmt = $pdo->query("
-                        SELECT p.product_id, p.name, p.category, p.price, p.is_active, 
-                               pi.image_url as main_image
-                        FROM products p
-                        LEFT JOIN product_images pi ON p.product_id = pi.product_id AND pi.is_thumbnail = 1
-                        ORDER BY p.created_at DESC
+                        SELECT o.order_id, o.order_number, o.order_date, o.total_amount, o.status, 
+                               CONCAT(u.first_name, ' ', u.last_name) as customer_name
+                        FROM orders o
+                        JOIN users u ON o.user_id = u.user_id
+                        ORDER BY o.order_date DESC
                     ");
-                    $products = $stmt->fetchAll();
+                    $orders = $stmt->fetchAll();
                     
-                    foreach ($products as $product):
+                    foreach ($orders as $order):
+                        $orderDate = new DateTime($order['order_date']);
+                        $formattedDate = $orderDate->format('M j, Y');
                     ?>
-                    <tr>
+                    <tr data-order-id="<?= $order['order_id'] ?>">
+                        <td><?= htmlspecialchars($order['order_number']) ?></td>
+                        <td><?= htmlspecialchars($order['customer_name']) ?></td>
+                        <td><?= $formattedDate ?></td>
+                        <td><?= number_format($order['total_amount'], 2) ?>৳</td>
                         <td>
-                            <?php if ($product['main_image']): ?>
-                                <img src="<?= htmlspecialchars($product['main_image']) ?>" class="product-img" alt="<?= htmlspecialchars($product['name']) ?>">
-                            <?php else: ?>
-                                <div class="no-image">No Image</div>
-                            <?php endif; ?>
-                        </td>
-                        <td><?= htmlspecialchars($product['name']) ?></td>
-                        <td><?= ucfirst($product['category']) ?></td>
-                        <td><?= number_format($product['price'], 2) ?>৳</td>
-                        <td>
-                            <span class="status-<?= $product['is_active'] ? 'active' : 'inactive' ?>">
-                                <?= $product['is_active'] ? 'Active' : 'Inactive' ?>
+                            <span class="status-badge status-<?= $order['status'] ?>">
+                                <?= ucfirst($order['status']) ?>
                             </span>
                         </td>
                         <td>
-                            <a href="admin-edit-product.php?id=<?= $product['product_id'] ?>" class="action-btn btn-edit">
-                                <i class="fas fa-edit"></i> Edit
-                            </a>
-                            <a href="#" class="action-btn btn-delete" onclick="confirmDelete('<?= $product['product_id'] ?>')">
-                                <i class="fas fa-trash"></i> Delete
+                            <select class="status-select" data-order-id="<?= $order['order_id'] ?>">
+                                <option value="pending" <?= $order['status'] === 'pending' ? 'selected' : '' ?>>Pending</option>
+                                <option value="processing" <?= $order['status'] === 'processing' ? 'selected' : '' ?>>Processing</option>
+                                <option value="shipped" <?= $order['status'] === 'shipped' ? 'selected' : '' ?>>Shipped</option>
+                                <option value="delivered" <?= $order['status'] === 'delivered' ? 'selected' : '' ?>>Delivered</option>
+                                <option value="cancelled" <?= $order['status'] === 'cancelled' ? 'selected' : '' ?>>Cancelled</option>
+                            </select>
+                            <button class="btn-update" data-order-id="<?= $order['order_id'] ?>">Update</button>
+                            <a href="admin-order-details.php?id=<?= $order['order_id'] ?>" class="action-btn btn-edit">
+                                <i class="fas fa-eye"></i> View
                             </a>
                         </td>
                     </tr>
@@ -539,49 +591,58 @@ require_once 'db_connection.php'; // Add this for database access
     </div>
 
     <script>
-        function confirmDelete(productId) {
-    if (confirm('Are you sure you want to permanently delete this product? This cannot be undone!')) {
-        fetch('admin_api.php?action=delete_product&id=' + productId)
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    alert('Product deleted successfully');
-                    window.location.reload();
-                } else {
-                    alert('Error: ' + data.message);
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('An error occurred while deleting the product');
+        document.addEventListener('click', async function(e) {
+    if (e.target.classList.contains('btn-update')) {
+        const orderId = e.target.dataset.orderId;
+        const statusSelect = document.querySelector(`.status-select[data-order-id="${orderId}"]`);
+        const newStatus = statusSelect.value;
+        
+        try {
+            const response = await fetch('admin_api.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `action=update_order_status&order_id=${orderId}&status=${newStatus}`
             });
+            
+            const result = await response.json();
+            
+            if (result.success) {
+                alert('Order status updated successfully!');
+                // Update the status badge
+                const statusBadge = document.querySelector(`tr[data-order-id="${orderId}"] .status-badge`);
+                statusBadge.className = `status-badge status-${newStatus}`;
+                statusBadge.textContent = newStatus.charAt(0).toUpperCase() + newStatus.slice(1);
+            } else {
+                alert('Error: ' + result.message);
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('An error occurred. Please try again :)');
+        }
     }
-}
+});
         
         // Simple client-side filtering
-        document.getElementById('search').addEventListener('input', filterProducts);
-        document.getElementById('category-filter').addEventListener('change', filterProducts);
-        document.getElementById('status-filter').addEventListener('change', filterProducts);
+        document.getElementById('search').addEventListener('input', filterOrders);
+        document.getElementById('status-filter').addEventListener('change', filterOrders);
         
-        function filterProducts() {
+        function filterOrders() {
             const search = document.getElementById('search').value.toLowerCase();
-            const category = document.getElementById('category-filter').value;
             const status = document.getElementById('status-filter').value;
             
-            const rows = document.querySelectorAll('#products-table-body tr');
+            const rows = document.querySelectorAll('#orders-table-body tr');
             
             rows.forEach(row => {
-                const name = row.cells[1].textContent.toLowerCase();
-                const rowCategory = row.cells[2].textContent.toLowerCase();
-                const rowStatus = row.cells[4].querySelector('span').textContent.toLowerCase();
+                const orderNumber = row.cells[0].textContent.toLowerCase();
+                const customerName = row.cells[1].textContent.toLowerCase();
+                const rowStatus = row.querySelector('.status-badge').textContent.toLowerCase();
                 
-                const matchesSearch = name.includes(search);
-                const matchesCategory = category === '' || rowCategory.includes(category);
-                const matchesStatus = status === '' || 
-                    (status === '1' && rowStatus === 'active') || 
-                    (status === '0' && rowStatus === 'inactive');
+                const matchesSearch = orderNumber.includes(search) || customerName.includes(search);
+                const matchesStatus = status === '' || rowStatus.includes(status);
                 
-                if (matchesSearch && matchesCategory && matchesStatus) {
+                if (matchesSearch && matchesStatus) {
                     row.style.display = '';
                 } else {
                     row.style.display = 'none';

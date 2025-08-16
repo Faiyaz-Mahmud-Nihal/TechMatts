@@ -202,68 +202,118 @@
     </footer>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Get order data from sessionStorage
-            const orderData = JSON.parse(sessionStorage.getItem('orderData'));
-            
-            if (!orderData) {
-                // If no order data found, redirect to home
-                window.location.href = 'index.html';
-                return;
+    document.addEventListener('DOMContentLoaded', async function() {
+    // First handle the auth status
+    try {
+        const response = await fetch('auth.php?action=check');
+        const authData = await response.json();
+        
+        const authLink = document.getElementById('auth-link');
+        if (authLink) {
+            if (authData.loggedIn) {
+                authLink.textContent = authData.email;
+                authLink.href = 'logout.php';
+            } else {
+                authLink.textContent = 'Login/Register';
+                authLink.href = 'login.html';
             }
+        }
+    } catch (error) {
+        console.error('Error checking login status:', error);
+    }
 
-            // Format current date
-            const now = new Date();
-            const options = { year: 'numeric', month: 'long', day: 'numeric' };
-            const formattedDate = now.toLocaleDateString('en-US', options);
-            
-            // Update order details
-            document.getElementById('order-id').textContent = orderData.orderNumber || '52816537706';
-            document.getElementById('payment-method').textContent = orderData.paymentMethod || 'bKash';
-            document.getElementById('order-date').textContent = formattedDate;
-            document.getElementById('order-total').textContent = orderData.total ? orderData.total.toFixed(2) + '৳' : '0.00৳';
-            
-            // Format shipping address
-            if (orderData.customer) {
-                const shippingAddress = `${orderData.customer.address}, ${orderData.customer.district}`;
-                document.getElementById('shipping-address').textContent = shippingAddress;
+    // Then handle the order processing
+    const orderData = JSON.parse(sessionStorage.getItem('orderData'));
+    
+    if (!orderData) {
+        window.location.href = 'index.html';
+        return;
+    }
+
+    try {
+        // Get user ID from auth check or use guest (1)
+        let userId = 1; // Default to guest
+        try {
+            const authResponse = await fetch('auth.php?action=check');
+            const authData = await authResponse.json();
+            if (authData.loggedIn && authData.user_id) {
+                userId = authData.user_id;
             }
+        } catch (authError) {
+            console.error('Error getting user ID:', authError);
+        }
 
-            // Clear cart after successful payment
-            localStorage.removeItem('cart');
-            updateCartCounter();
-            
-            // Update cart counter to show 0
-            document.querySelectorAll('.cart-count').forEach(el => el.textContent = '0');
+        // Send order to server with detailed error handling
+        const response = await fetch('process_order.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                user_id: userId,
+                total: orderData.total,
+                payment_method: orderData.paymentMethod,
+                shipping_address: `${orderData.customer.address}, ${orderData.customer.district}`,
+                shipping_district: orderData.customer.district,
+                shipping_postcode: orderData.customer.postcode || '',
+                shipping_phone: orderData.customer.phone,
+                notes: orderData.customer.notes || '',
+                items: orderData.items.map(item => ({
+                    id: item.id,
+                    name: item.name,
+                    price: item.price,
+                    quantity: item.quantity,
+                    size: item.size || null
+                }))
+            })
         });
 
-        function updateCartCounter() {
-            const cart = JSON.parse(localStorage.getItem('cart')) || [];
-            const count = cart.reduce((total, item) => total + item.quantity, 0);
-            document.querySelectorAll('.cart-count').forEach(el => el.textContent = count);
-        }
-    </script>
-    <script>
-    // Update auth link based on login status
-    document.addEventListener('DOMContentLoaded', async function() {
+        // Handle response with detailed error info
+        let result;
         try {
-            const response = await fetch('auth.php?action=check');
-            const data = await response.json();
-            
-            const authLink = document.getElementById('auth-link');
-            if (authLink) {
-                if (data.loggedIn) {
-                    authLink.textContent = data.email;
-                    authLink.href = 'logout.php';
-                } else {
-                    authLink.textContent = 'Login/Register';
-                    authLink.href = 'login.html';
-                }
+            result = await response.json();
+            if (!response.ok) {
+                throw new Error(result.error || 'Failed to process order');
             }
-        } catch (error) {
-            console.error('Error checking login status:', error);
+        } catch (parseError) {
+            const text = await response.text();
+            console.error('Failed to parse JSON response:', text);
+            throw new Error('Invalid server response');
         }
-    });
+
+        // Format current date
+        const now = new Date();
+        const options = { year: 'numeric', month: 'long', day: 'numeric' };
+        const formattedDate = now.toLocaleDateString('en-US', options);
+        
+        // Update UI with order details
+        document.getElementById('order-id').textContent = result.order_number;
+        document.getElementById('payment-method').textContent = orderData.paymentMethod || 'bKash';
+        document.getElementById('order-date').textContent = formattedDate;
+        document.getElementById('order-total').textContent = orderData.total ? 
+            orderData.total.toFixed(2) + '৳' : '0.00৳';
+        
+        if (orderData.customer) {
+            const shippingAddress = `${orderData.customer.address}, ${orderData.customer.district}`;
+            document.getElementById('shipping-address').textContent = shippingAddress;
+        }
+
+        // Clear cart and update counter
+        localStorage.removeItem('cart');
+        updateCartCounter();
+        document.querySelectorAll('.cart-count').forEach(el => el.textContent = '0');
+
+    } catch (error) {
+        console.error('Order processing error:', error);
+        alert('There was an error processing your order. Please contact support with order details.');
+    }
+});
+
+function updateCartCounter() {
+    const cart = JSON.parse(localStorage.getItem('cart')) || [];
+    const count = cart.reduce((total, item) => total + item.quantity, 0);
+    document.querySelectorAll('.cart-count').forEach(el => el.textContent = count);
+}
 </script>
 </body>
 </html>

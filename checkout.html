@@ -462,7 +462,7 @@
             document.querySelector('.cart-count').textContent = cartCount;
             
             // Form validation and submission
-            document.getElementById('checkout-form').addEventListener('submit', function(e) {
+            document.getElementById('checkout-form').addEventListener('submit', async function(e) {
                 e.preventDefault();
                 
                 // Validate required fields
@@ -485,36 +485,46 @@
                 }
                 
                 if (isValid) {
-                    // Prepare order data
-                    const orderData = {
-                        customer: {
-                            firstName: document.getElementById('first-name').value,
-                            lastName: document.getElementById('last-name').value,
-                            address: document.querySelector('[placeholder="House number and street name"]').value,
-                            district: document.getElementById('district').value,
-                            postcode: document.getElementById('postcode').value,
-                            phone: document.getElementById('phone').value,
-                            email: document.getElementById('email').value,
-                            notes: document.getElementById('order-notes').value
-                        },
-                        items: cart,
-                        paymentMethod: document.querySelector('input[name="payment"]:checked').value,
-                        subtotal: subtotal,
-                        total: subtotal,
-                        orderNumber: 'ORD-' + Date.now().toString().slice(-6)
-                    };
-                    
-                    // Save order data to sessionStorage
-                    sessionStorage.setItem('orderData', JSON.stringify(orderData));
-                    
-                    // Redirect based on payment method
-                    const paymentMethod = document.querySelector('input[name="payment"]:checked').value;
-                    if (paymentMethod === 'bkash') {
-                        window.location.href = 'bkash-payment.html';
-                    } else {
-                        // For other payment methods (demo only)
-                        alert('Other payment methods not implemented in this demo. Redirecting to bKash.');
-                        window.location.href = 'bkash-payment.html';
+                    try {
+                        // Get user ID from auth check
+                        const authResponse = await fetch('auth.php?action=check');
+                        const authData = await authResponse.json();
+                        
+                        // Prepare order data
+                        const orderData = {
+                            userId: authData.loggedIn ? (authData.userId || 1) : 1, // Default to 1 if not logged in
+                            customer: {
+                                firstName: document.getElementById('first-name').value,
+                                lastName: document.getElementById('last-name').value,
+                                address: document.querySelector('[placeholder="House number and street name"]').value,
+                                district: document.getElementById('district').value,
+                                postcode: document.getElementById('postcode').value,
+                                phone: document.getElementById('phone').value,
+                                email: document.getElementById('email').value,
+                                notes: document.getElementById('order-notes').value
+                            },
+                            items: cart,
+                            paymentMethod: document.querySelector('input[name="payment"]:checked').value,
+                            subtotal: subtotal,
+                            total: subtotal,
+                            orderNumber: 'ORD-' + Date.now().toString().slice(-6)
+                        };
+                        
+                        // Save order data to sessionStorage
+                        sessionStorage.setItem('orderData', JSON.stringify(orderData));
+                        
+                        // Redirect based on payment method
+                        const paymentMethod = document.querySelector('input[name="payment"]:checked').value;
+                        if (paymentMethod === 'bkash') {
+                            window.location.href = 'bkash-payment.html';
+                        } else {
+                            // For other payment methods (demo only)
+                            alert('Other payment methods not implemented in this demo. Redirecting to bKash.');
+                            window.location.href = 'bkash-payment.html';
+                        }
+                    } catch (error) {
+                        console.error('Error during checkout:', error);
+                        alert('There was an error processing your order. Please try again.');
                     }
                 }
             });
