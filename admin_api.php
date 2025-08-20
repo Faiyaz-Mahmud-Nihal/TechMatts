@@ -90,6 +90,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
                 }
                 break;
 
+            case 'delete_user':
+                if (empty($_GET['id'])) {
+                    throw new Exception("User ID is required");
+                }
+                
+                $userId = $_GET['id'];
+                
+                // Prevent deleting yourself
+                if ($userId == $_SESSION['user_id']) {
+                    throw new Exception("You cannot delete your own account");
+                }
+                
+                $pdo->beginTransaction();
+                
+                try {
+                    // First delete from suppliers table if exists
+                    $pdo->prepare("DELETE FROM suppliers WHERE supplier_id = ?")->execute([$userId]);
+                    
+                    // Then delete from users table
+                    $pdo->prepare("DELETE FROM users WHERE user_id = ?")->execute([$userId]);
+                    
+                    $pdo->commit();
+                    
+                    echo json_encode(['success' => true, 'message' => 'User deleted successfully']);
+                } catch (Exception $e) {
+                    $pdo->rollBack();
+                    throw $e;
+                }
+                break;
+
             default:
                 echo json_encode(['success' => false, 'message' => 'Invalid action']);
         }
@@ -163,7 +193,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         throw new Exception("Required field '$field' is missing");
                     }
                 }
-                
+
                 if (isset($_POST['is_active']) && $_POST['is_active'] == 1) {
                     $stmt = $pdo->prepare("SELECT COUNT(*) FROM product_images WHERE product_id = ?");
                     $stmt->execute([$_POST['product_id']]);
@@ -176,10 +206,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 
                 $pdo->beginTransaction();
                 
-                // Update product
+                // Update product - Make sure price is included here
                 $pdo->prepare("
                     UPDATE products 
-                    SET name = ?, description = ?, category = ?, type = ?, price = ?, is_active = ?, updated_at = CURRENT_TIMESTAMP
+                    SET name = ?, description = ?, category = ?, type = ?, price = ?, price_range = CONCAT(?, '৳'), is_active = ?, updated_at = CURRENT_TIMESTAMP
                     WHERE product_id = ?
                 ")->execute([
                     $_POST['name'],
@@ -187,6 +217,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $_POST['category'],
                     $_POST['type'] ?? null,
                     $_POST['price'],
+                    $_POST['price'], // This sets price_range to the same value as price with '৳' appended
                     $_POST['is_active'] ?? 1,
                     $_POST['product_id']
                 ]);
@@ -209,6 +240,208 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $pdo->commit();
                 
                 echo json_encode(['success' => true, 'message' => 'Product updated successfully']);
+                break;
+
+            case 'add_user':
+                $required = ['first_name', 'last_name', 'email', 'phone', 'role', 'is_active'];
+                foreach ($required as $field) {
+                    if (empty($_POST[$field])) {
+                        throw new Exception("Required field '$field' is missing");
+                    }
+                }
+                
+                // Check if passwords match if provided
+                if (!empty($_POST['password']) && $_POST['password'] !== $_POST['confirm_password']) {
+                    throw new Exception("Passwords do not match");
+                }
+                
+                // Check if email already exists
+                $stmt = $pdo->prepare("SELECT COUNT(*) FROM users WHERE email = ?");
+                $stmt->execute([$_POST['email']]);
+                if ($stmt->fetchColumn() > 0) {
+                    throw new Exception("Email already exists");
+                }
+                
+                $pdo->beginTransaction();
+                
+                try {
+                    // Hash password if provided
+                    $passwordHash = !empty($_POST['password']) ? password_hash($_POST['password'], PASSWORD_DEFAULT) : '';
+                    
+                    // Insert user
+                    $stmt = $pdo->prepare("
+                        INSERT INTO users 
+                        (first_name, last_name, email, phone, password_hash, role, is_active, address, district, postcode)
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    ");
+                    $stmt->execute([
+                        $_POST['first_name'],
+                        $_POST['last_name'],
+                        $_POST['email'],
+                        $_POST['phone'],
+                        $passwordHash,
+                        $_POST['role'],
+                        $_POST['is_active'],
+                        $_POST['address'] ?? null,
+                        $_POST['district'] ?? null,
+                        $_POST['postcode'] ?? null
+                    ]);
+                    
+                    $userId = $pdo->lastInsertId();
+                    
+                    // If role is supplier, add to suppliers table
+                    if ($_POST['role'] === 'supplier') {
+                        $stmt = $pdo->prepare("
+                            INSERT INTO suppliers 
+                            (supplier_id, company_name, contact_person, supplier_since, bank_account, tax_id)
+                            VALUES (?, ?, ?, ?, ?, ?)
+                        ");
+                        $stmt->execute([
+                            $userId,
+                            $_POST['company_name'] ?? null,
+                            $_POST['contact_person'] ?? null,
+                            $_POST['supplier_since'] ?? null,
+                            $_POST['bank_account'] ?? null,
+                            $_POST['tax_id'] ?? null
+                        ]);
+                    }
+                    
+                    $pdo->commit();
+                    
+                    echo json_encode(['success' => true, 'message' => 'User added successfully']);
+                } catch (Exception $e) {
+                    $pdo->rollBack();
+                    throw $e;
+                }
+                break;
+
+            case 'update_user':
+                $required = ['user_id', 'first_name', 'last_name', 'email', 'phone', 'role', 'is_active'];
+                foreach ($required as $field) {
+                    if (empty($_POST[$field])) {
+                        throw new Exception("Required field '$field' is missing");
+                    }
+                }
+                
+                // Check if passwords match if provided
+                if (!empty($_POST['password']) && $_POST['password'] !== $_POST['confirm_password']) {
+                    throw new Exception("Passwords do not match");
+                }
+                
+                $userId = $_POST['user_id'];
+                
+                // Prevent changing your own role or status
+                if ($userId == $_SESSION['user_id']) {
+                    if ($_POST['role'] !== 'admin') {
+                        throw new Exception("You cannot change your own role");
+                    }
+                    if ($_POST['is_active'] != 1) {
+                        throw new Exception("You cannot deactivate your own account");
+                    }
+                }
+                
+                $pdo->beginTransaction();
+                
+                try {
+                    // Check if email already exists for another user
+                    $stmt = $pdo->prepare("SELECT COUNT(*) FROM users WHERE email = ? AND user_id != ?");
+                    $stmt->execute([$_POST['email'], $userId]);
+                    if ($stmt->fetchColumn() > 0) {
+                        throw new Exception("Email already exists for another user");
+                    }
+                    
+                    // Get current user data to determine if we need to update password
+                    $stmt = $pdo->prepare("SELECT password_hash FROM users WHERE user_id = ?");
+                    $stmt->execute([$userId]);
+                    $currentUser = $stmt->fetch();
+                    
+                    $passwordHash = !empty($_POST['password']) 
+                        ? password_hash($_POST['password'], PASSWORD_DEFAULT) 
+                        : $currentUser['password_hash'];
+                    
+                    // Update user
+                    $stmt = $pdo->prepare("
+                        UPDATE users SET 
+                        first_name = ?, 
+                        last_name = ?, 
+                        email = ?, 
+                        phone = ?, 
+                        password_hash = ?, 
+                        role = ?, 
+                        is_active = ?, 
+                        address = ?, 
+                        district = ?, 
+                        postcode = ? 
+                        WHERE user_id = ?
+                    ");
+                    $stmt->execute([
+                        $_POST['first_name'],
+                        $_POST['last_name'],
+                        $_POST['email'],
+                        $_POST['phone'],
+                        $passwordHash,
+                        $_POST['role'],
+                        $_POST['is_active'],
+                        $_POST['address'] ?? null,
+                        $_POST['district'] ?? null,
+                        $_POST['postcode'] ?? null,
+                        $userId
+                    ]);
+                    
+                    // Handle supplier data
+                    if ($_POST['role'] === 'supplier') {
+                        // Check if supplier record exists
+                        $stmt = $pdo->prepare("SELECT COUNT(*) FROM suppliers WHERE supplier_id = ?");
+                        $stmt->execute([$userId]);
+                        $supplierExists = $stmt->fetchColumn() > 0;
+                        
+                        if ($supplierExists) {
+                            // Update existing supplier
+                            $stmt = $pdo->prepare("
+                                UPDATE suppliers SET
+                                company_name = ?,
+                                contact_person = ?,
+                                supplier_since = ?,
+                                bank_account = ?,
+                                tax_id = ?
+                                WHERE supplier_id = ?
+                            ");
+                            $stmt->execute([
+                                $_POST['company_name'] ?? null,
+                                $_POST['contact_person'] ?? null,
+                                $_POST['supplier_since'] ?? null,
+                                $_POST['bank_account'] ?? null,
+                                $_POST['tax_id'] ?? null,
+                                $userId
+                            ]);
+                        } else {
+                            // Insert new supplier
+                            $stmt = $pdo->prepare("
+                                INSERT INTO suppliers 
+                                (supplier_id, company_name, contact_person, supplier_since, bank_account, tax_id)
+                                VALUES (?, ?, ?, ?, ?, ?)
+                            ");
+                            $stmt->execute([
+                                $userId,
+                                $_POST['company_name'] ?? null,
+                                $_POST['contact_person'] ?? null,
+                                $_POST['supplier_since'] ?? null,
+                                $_POST['bank_account'] ?? null,
+                                $_POST['tax_id'] ?? null
+                            ]);
+                        }
+                    } else {
+                        // Remove from suppliers table if role changed from supplier
+                        $pdo->prepare("DELETE FROM suppliers WHERE supplier_id = ?")->execute([$userId]);
+                    }
+                    
+                    $pdo->commit();
+                    
+                    echo json_encode(['success' => true, 'message' => 'User updated successfully']);
+                } catch (Exception $e) {
+                    $pdo->rollBack();
+                    throw $e;
+                }
                 break;
 
             default:

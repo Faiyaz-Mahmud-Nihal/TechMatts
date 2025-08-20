@@ -1,5 +1,5 @@
 <?php
-require_once 'admin_auth.php';
+require_once 'supplier_auth.php';
 require_once 'db_connection.php';
 ?>
 <!DOCTYPE html>
@@ -7,7 +7,7 @@ require_once 'db_connection.php';
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Edit Product | TechMatts Admin</title>
+    <title>Add Product | TechMatts Supplier</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         :root {
@@ -287,75 +287,33 @@ require_once 'db_connection.php';
             margin-bottom: 20px;
             cursor: pointer;
         }
-        
-        .existing-images {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-        
-        .existing-image {
-            position: relative;
-            width: 120px;
-            height: 120px;
-        }
-        
-        .existing-image img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            border-radius: 4px;
-        }
-        
-        .existing-image .remove-existing {
-            position: absolute;
-            top: 5px;
-            right: 5px;
-            background: var(--danger);
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 25px;
-            height: 25px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-        }
     </style>
 </head>
 <body>
-    <div class="admin-container">
+    <div class="supplier-container">
         <!-- Sidebar -->
-        <div class="admin-sidebar">
-            <div class="admin-logo">
-                <h2>TechMatts Admin</h2>
+        <div class="supplier-sidebar">
+            <div class="supplier-logo">
+                <h2>TechMatts Supplier</h2>
             </div>
-            <ul class="admin-menu">
-                <li><a href="admin.php"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
-                <li><a href="admin-products.php" class="active"><i class="fas fa-box-open"></i> Products</a></li>
-                <li><a href="admin-orders.php"><i class="fas fa-shopping-cart"></i> Orders</a></li>
-                <li><a href="admin-users.php"><i class="fas fa-users"></i> Users</a></li>
-                <!-- <li><a href="admin-suppliers.php"><i class="fas fa-truck"></i> Suppliers</a></li> -->
+            <ul class="supplier-menu">
+                <li><a href="supplier.php"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
                 <li><a href="logout.php"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
             </ul>
         </div>
         
         <!-- Main Content -->
-        <div class="admin-content">
-            <div class="admin-header">
-                <h1>Edit Product</h1>
+        <div class="supplier-content">
+            <div class="supplier-header">
+                <h1>Add New Product</h1>
                 <div class="user-profile">
-                    <img src="https://ui-avatars.com/api/?name=Admin&background=e2136e&color=fff" alt="Admin">
-                    <span>Admin</span>
+                    <img src="https://ui-avatars.com/api/?name=Supplier&background=3a86ff&color=fff" alt="Supplier">
+                    <span>Supplier</span>
                 </div>
             </div>
             
             <div class="form-container">
-                <form id="edit-product-form" enctype="multipart/form-data">
-                    <input type="hidden" id="product-id" name="product_id">
-                    
+                <form id="add-product-form" enctype="multipart/form-data">
                     <div class="form-row">
                         <div class="form-group">
                             <label for="product-name">Product Name</label>
@@ -381,9 +339,9 @@ require_once 'db_connection.php';
                         <div class="form-group">
                             <label for="product-status">Status</label>
                             <select id="product-status" name="is_active" required>
-                            <option value="1">Active</option>
-                            <option value="0">Inactive</option>
-                        </select>
+                                <option value="1">Active</option>
+                                <option value="0">Inactive</option>
+                            </select>
                         </div>
                     </div>
                     
@@ -402,7 +360,19 @@ require_once 'db_connection.php';
                         <div class="form-group">
                             <label>Sizes</label>
                             <div id="size-fields">
-                                <!-- Will be populated by JavaScript -->
+                                <div class="dynamic-field">
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label>Dimensions</label>
+                                            <input type="text" name="sizes[0][dimensions]" placeholder="e.g., 900 X 400 X 4mm">
+                                        </div>
+                                        <div class="form-group">
+                                            <label>SKU</label>
+                                            <input type="text" name="sizes[0][sku]" placeholder="e.g., product-900-400-1">
+                                        </div>
+                                    </div>
+                                    <button type="button" class="remove-field" onclick="removeField(this)">Remove</button>
+                                </div>
                             </div>
                             <button type="button" class="add-field" onclick="addSizeField()">Add Size</button>
                         </div>
@@ -410,7 +380,10 @@ require_once 'db_connection.php';
                         <div class="form-group">
                             <label>Features</label>
                             <div id="feature-fields">
-                                <!-- Will be populated by JavaScript -->
+                                <div class="dynamic-field">
+                                    <input type="text" name="features[]" placeholder="e.g., Watersplash Proof">
+                                    <button type="button" class="remove-field" onclick="removeField(this)">Remove</button>
+                                </div>
                             </div>
                             <button type="button" class="add-field" onclick="addFeatureField()">Add Feature</button>
                         </div>
@@ -421,7 +394,10 @@ require_once 'db_connection.php';
                         <div class="form-group">
                             <label>Specifications</label>
                             <div id="spec-fields">
-                                <!-- Will be populated by JavaScript -->
+                                <div class="dynamic-field">
+                                    <input type="text" name="specs[]" placeholder="e.g., AMD Ryzen 7 7700">
+                                    <button type="button" class="remove-field" onclick="removeField(this)">Remove</button>
+                                </div>
                             </div>
                             <button type="button" class="add-field" onclick="addSpecField()">Add Specification</button>
                         </div>
@@ -430,7 +406,10 @@ require_once 'db_connection.php';
                     <div class="form-group">
                         <label>Categories (for filtering)</label>
                         <div id="category-fields">
-                            <!-- Will be populated by JavaScript -->
+                            <div class="dynamic-field">
+                                <input type="text" name="categories[]" placeholder="e.g., Mousepad, Pre Order">
+                                <button type="button" class="remove-field" onclick="removeField(this)">Remove</button>
+                            </div>
                         </div>
                         <button type="button" class="add-field" onclick="addCategoryField()">Add Category</button>
                     </div>
@@ -438,18 +417,16 @@ require_once 'db_connection.php';
                     <div class="form-group">
                         <label>Tags</label>
                         <div id="tag-fields">
-                            <!-- Will be populated by JavaScript -->
+                            <div class="dynamic-field">
+                                <input type="text" name="tags[]" placeholder="e.g., deal, design">
+                                <button type="button" class="remove-field" onclick="removeField(this)">Remove</button>
+                            </div>
                         </div>
                         <button type="button" class="add-field" onclick="addTagField()">Add Tag</button>
                     </div>
                     
                     <div class="form-group">
-                        <label>Existing Images</label>
-                        <div class="existing-images" id="existing-images">
-                            <!-- Will be populated by JavaScript -->
-                        </div>
-                        
-                        <label for="product-images">Add New Images</label>
+                        <label for="product-images">Product Images</label>
                         <input type="file" id="product-images" name="images[]" multiple accept="image/*">
                         <small>First image will be used as the main image</small>
                         
@@ -457,8 +434,8 @@ require_once 'db_connection.php';
                     </div>
                     
                     <div class="form-group">
-                        <button type="submit" class="btn">Update Product</button>
-                        <a href="admin-products.php" class="btn btn-secondary">Cancel</a>
+                        <button type="submit" class="btn">Save Product</button>
+                        <a href="supplier.php" class="btn btn-secondary">Cancel</a>
                     </div>
                 </form>
             </div>
@@ -466,14 +443,14 @@ require_once 'db_connection.php';
     </div>
 
     <script>
-        // Show/hide category-specific fields
+        // Similar to admin-add-product.php but posting to supplier_api.php
         document.getElementById('product-category').addEventListener('change', function() {
             const category = this.value;
             document.getElementById('mousepad-fields').style.display = category === 'mousepad' ? 'block' : 'none';
             document.getElementById('pcbuild-fields').style.display = category === 'pcbuild' ? 'block' : 'none';
         });
         
-        // Image preview for new images
+        // Image preview
         document.getElementById('product-images').addEventListener('change', function(e) {
             const preview = document.getElementById('image-preview');
             preview.innerHTML = '';
@@ -504,13 +481,13 @@ require_once 'db_connection.php';
         });
         
         // Dynamic field functions
-        let sizeFieldCount = 0;
-        let featureFieldCount = 0;
-        let specFieldCount = 0;
-        let categoryFieldCount = 0;
-        let tagFieldCount = 0;
+        let sizeFieldCount = 1;
+        let featureFieldCount = 1;
+        let specFieldCount = 1;
+        let categoryFieldCount = 1;
+        let tagFieldCount = 1;
         
-        function addSizeField(dimensions = '', sku = '') {
+        function addSizeField() {
             const container = document.getElementById('size-fields');
             const field = document.createElement('div');
             field.className = 'dynamic-field';
@@ -518,11 +495,11 @@ require_once 'db_connection.php';
                 <div class="form-row">
                     <div class="form-group">
                         <label>Dimensions</label>
-                        <input type="text" name="sizes[${sizeFieldCount}][dimensions]" placeholder="e.g., 900 X 400 X 4mm" value="${dimensions}">
+                        <input type="text" name="sizes[${sizeFieldCount}][dimensions]" placeholder="e.g., 900 X 400 X 4mm">
                     </div>
                     <div class="form-group">
                         <label>SKU</label>
-                        <input type="text" name="sizes[${sizeFieldCount}][sku]" placeholder="e.g., product-900-400-1" value="${sku}">
+                        <input type="text" name="sizes[${sizeFieldCount}][sku]" placeholder="e.g., product-900-400-1">
                     </div>
                 </div>
                 <button type="button" class="remove-field" onclick="removeField(this)">Remove</button>
@@ -531,48 +508,48 @@ require_once 'db_connection.php';
             sizeFieldCount++;
         }
         
-        function addFeatureField(feature = '') {
+        function addFeatureField() {
             const container = document.getElementById('feature-fields');
             const field = document.createElement('div');
             field.className = 'dynamic-field';
             field.innerHTML = `
-                <input type="text" name="features[]" placeholder="e.g., Watersplash Proof" value="${feature}">
+                <input type="text" name="features[]" placeholder="e.g., Watersplash Proof">
                 <button type="button" class="remove-field" onclick="removeField(this)">Remove</button>
             `;
             container.appendChild(field);
             featureFieldCount++;
         }
         
-        function addSpecField(spec = '') {
+        function addSpecField() {
             const container = document.getElementById('spec-fields');
             const field = document.createElement('div');
             field.className = 'dynamic-field';
             field.innerHTML = `
-                <input type="text" name="specs[]" placeholder="e.g., AMD Ryzen 7 7700" value="${spec}">
+                <input type="text" name="specs[]" placeholder="e.g., AMD Ryzen 7 7700">
                 <button type="button" class="remove-field" onclick="removeField(this)">Remove</button>
             `;
             container.appendChild(field);
             specFieldCount++;
         }
         
-        function addCategoryField(category = '') {
+        function addCategoryField() {
             const container = document.getElementById('category-fields');
             const field = document.createElement('div');
             field.className = 'dynamic-field';
             field.innerHTML = `
-                <input type="text" name="categories[]" placeholder="e.g., Mousepad, Pre Order" value="${category}">
+                <input type="text" name="categories[]" placeholder="e.g., Mousepad, Pre Order">
                 <button type="button" class="remove-field" onclick="removeField(this)">Remove</button>
             `;
             container.appendChild(field);
             categoryFieldCount++;
         }
         
-        function addTagField(tag = '') {
+        function addTagField() {
             const container = document.getElementById('tag-fields');
             const field = document.createElement('div');
             field.className = 'dynamic-field';
             field.innerHTML = `
-                <input type="text" name="tags[]" placeholder="e.g., deal, design" value="${tag}">
+                <input type="text" name="tags[]" placeholder="e.g., deal, design">
                 <button type="button" class="remove-field" onclick="removeField(this)">Remove</button>
             `;
             container.appendChild(field);
@@ -583,114 +560,14 @@ require_once 'db_connection.php';
             button.parentElement.remove();
         }
         
-        // Load product data
-        document.addEventListener('DOMContentLoaded', async function() {
-            const productId = new URLSearchParams(window.location.search).get('id');
-            if (!productId) {
-                alert('No product ID specified');
-                window.location.href = 'admin-products.php';
-                return;
-            }
-            
-            try {
-                const response = await fetch(`get_product.php?id=${productId}`);
-                const product = await response.json();
-                
-                if (!product) {
-                    alert('Product not found');
-                    window.location.href = 'admin-products.php';
-                    return;
-                }
-                
-                // Populate basic fields
-                document.getElementById('product-id').value = product.product_id;
-                document.getElementById('product-name').value = product.name;
-                document.getElementById('product-category').value = product.category;
-                document.getElementById('product-price').value = product.price;
-                document.getElementById('product-description').value = product.description || '';
-                document.getElementById('product-status').value = product.is_active ? '1' : '0';
-                document.getElementById('product-type').value = product.type || '';
-                
-                // Trigger category change to show/hide fields
-                document.getElementById('product-category').dispatchEvent(new Event('change'));
-                
-                // Populate sizes (for mousepads)
-                if (product.category === 'mousepad' && product.sizes) {
-                    product.sizes.forEach(size => {
-                        addSizeField(size.dimensions, size.sku);
-                    });
-                }
-                
-                // Populate features (for mousepads)
-                if (product.category === 'mousepad' && product.features) {
-                    product.features.forEach(feature => {
-                        addFeatureField(feature);
-                    });
-                }
-                
-                // Populate specs (for pc builds)
-                if (product.category === 'pcbuild' && product.specs) {
-                    product.specs.forEach(spec => {
-                        addSpecField(spec);
-                    });
-                }
-                
-                // Populate categories
-                if (product.categories) {
-                    product.categories.forEach(category => {
-                        addCategoryField(category);
-                    });
-                }
-                
-                // Populate tags
-                if (product.tags) {
-                    product.tags.forEach(tag => {
-                        addTagField(tag);
-                    });
-                }
-                
-                // Populate existing images
-                const existingImagesContainer = document.getElementById('existing-images');
-                if (product.image && product.thumbnails) {
-                    const allImages = [product.image, ...product.thumbnails];
-                    allImages.forEach((image, index) => {
-                        const imgDiv = document.createElement('div');
-                        imgDiv.className = 'existing-image';
-                        imgDiv.innerHTML = `
-                            <img src="${image}" alt="Product Image ${index + 1}">
-                            <button class="remove-existing" data-image="${image}">&times;</button>
-                        `;
-                        existingImagesContainer.appendChild(imgDiv);
-                    });
-                    
-                    // Add click handlers for remove image buttons
-                    document.querySelectorAll('.remove-existing').forEach(btn => {
-                        btn.addEventListener('click', function(e) {
-                            e.preventDefault();
-                            if (confirm('Are you sure you want to remove this image?')) {
-                                const imageUrl = this.dataset.image;
-                                // TODO: Send request to remove image
-                                this.parentElement.remove();
-                            }
-                        });
-                    });
-                }
-                
-            } catch (error) {
-                console.error('Error loading product:', error);
-                alert('Error loading product data');
-                window.location.href = 'admin-products.php';
-            }
-        });
-        
         // Form submission
-        document.getElementById('edit-product-form').addEventListener('submit', async function(e) {
+        document.getElementById('add-product-form').addEventListener('submit', async function(e) {
             e.preventDefault();
             
             const formData = new FormData(this);
             
             try {
-                const response = await fetch('admin_api.php?action=update_product', {
+                const response = await fetch('supplier_api.php?action=add_product', {
                     method: 'POST',
                     body: formData
                 });
@@ -698,8 +575,8 @@ require_once 'db_connection.php';
                 const result = await response.json();
                 
                 if (result.success) {
-                    alert('Product updated successfully!');
-                    window.location.href = 'admin-products.php';
+                    alert('Product added successfully!');
+                    window.location.href = 'supplier.php';
                 } else {
                     alert('Error: ' + result.message);
                 }

@@ -346,8 +346,11 @@ require_once 'db_connection.php'; // Add this for database access
                 <li><a href="admin.php" class="active"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
                 <li><a href="admin-products.php"><i class="fas fa-box-open"></i> Products</a></li>
                 <li><a href="admin-orders.php"><i class="fas fa-shopping-cart"></i> Orders</a></li>
-                <li><a href="admin-users.php"><i class="fas fa-users"></i> Users</a></li>
-                <li><a href="admin-suppliers.php"><i class="fas fa-truck"></i> Suppliers</a></li>
+                <li><a href="admin-users.php"><i class="fas fa-users"></i> Users</a>
+            </li>
+                <!-- <li><a href="admin-suppliers.php"><i class="fas fa-truck"></i> Suppliers</a></li> -->
+
+
                 <li><a href="logout.php"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
             </ul>
         </div>

@@ -1,5 +1,5 @@
 <?php
-require_once 'admin_auth.php';
+require_once 'supplier_auth.php';
 require_once 'db_connection.php';
 ?>
 <!DOCTYPE html>
@@ -7,12 +7,12 @@ require_once 'db_connection.php';
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Edit Product | TechMatts Admin</title>
+    <title>Edit Product | TechMatts Supplier</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         :root {
-            --primary: #e2136e;
-            --primary-dark: #c10e5d;
+            --primary: #3a86ff;
+            --primary-dark: #2667cc;
             --dark: #1e1e1e;
             --light: #f5f5f5;
             --gray: #aaa;
@@ -34,15 +34,15 @@ require_once 'db_connection.php';
             color: #333;
         }
         
-        .admin-container {
+        .supplier-container {
             display: flex;
             min-height: 100vh;
         }
         
         /* Sidebar Styles */
-        .admin-sidebar {
+        .supplier-sidebar {
             width: 280px;
-            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            background: linear-gradient(135deg, #1a3a5a 0%, #2d4d6e 100%);
             color: white;
             padding: 0;
             box-shadow: 2px 0 10px rgba(0,0,0,0.1);
@@ -51,7 +51,7 @@ require_once 'db_connection.php';
             z-index: 100;
         }
         
-        .admin-logo {
+        .supplier-logo {
             padding: 25px;
             border-bottom: 1px solid rgba(255,255,255,0.1);
             margin-bottom: 10px;
@@ -59,26 +59,26 @@ require_once 'db_connection.php';
             background-color: rgba(0,0,0,0.2);
         }
         
-        .admin-logo h2 {
+        .supplier-logo h2 {
             color: white;
             font-size: 1.5rem;
             font-weight: 600;
-            background: linear-gradient(to right, #e2136e, #ff8a00);
+            background: linear-gradient(to right, #3a86ff, #4cc9f0);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
         
-        .admin-menu {
+        .supplier-menu {
             list-style: none;
             padding: 0 15px;
         }
         
-        .admin-menu li {
+        .supplier-menu li {
             margin-bottom: 5px;
             position: relative;
         }
         
-        .admin-menu a {
+        .supplier-menu a {
             display: flex;
             align-items: center;
             padding: 15px 20px;
@@ -89,27 +89,31 @@ require_once 'db_connection.php';
             font-size: 15px;
         }
         
-        .admin-menu a:hover {
+        .supplier-menu a:hover {
             background: rgba(255,255,255,0.1);
             color: white;
             transform: translateX(5px);
         }
         
-        .admin-menu a.active {
-            background: linear-gradient(90deg, rgba(226,19,110,0.2) 0%, rgba(226,19,110,0) 100%);
+        .supplier-menu a.active {
+            background: linear-gradient(90deg, rgba(58,134,255,0.2) 0%, rgba(58,134,255,0) 100%);
             color: white;
             border-left: 3px solid var(--primary);
         }
         
-        .admin-menu a i {
+        .supplier-menu a i {
             margin-right: 12px;
             width: 20px;
             text-align: center;
             font-size: 16px;
         }
         
+        .supplier-menu a.active i {
+            color: var(--primary);
+        }
+        
         /* Main Content Styles */
-        .admin-content {
+        .supplier-content {
             flex: 1;
             margin-left: 280px;
             padding: 30px;
@@ -117,7 +121,7 @@ require_once 'db_connection.php';
             min-height: 100vh;
         }
         
-        .admin-header {
+        .supplier-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -126,7 +130,7 @@ require_once 'db_connection.php';
             border-bottom: 1px solid #eee;
         }
         
-        .admin-header h1 {
+        .supplier-header h1 {
             font-size: 28px;
             color: #333;
             font-weight: 600;
@@ -177,8 +181,17 @@ require_once 'db_connection.php';
             width: 100%;
             padding: 12px;
             border: 1px solid #ddd;
-            border-radius: 4px;
+            border-radius: 8px;
             font-size: 16px;
+            transition: all 0.3s;
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(58,134,255,0.1);
         }
         
         .form-group textarea {
@@ -201,15 +214,18 @@ require_once 'db_connection.php';
             background-color: var(--primary);
             color: white;
             border: none;
-            border-radius: 4px;
+            border-radius: 8px;
             cursor: pointer;
             text-decoration: none;
             font-size: 16px;
+            font-weight: 500;
             transition: all 0.3s;
         }
         
         .btn:hover {
             background-color: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(58,134,255,0.3);
         }
         
         .btn-secondary {
@@ -218,6 +234,7 @@ require_once 'db_connection.php';
         
         .btn-secondary:hover {
             background-color: #5a6268;
+            box-shadow: 0 5px 15px rgba(108,117,125,0.3);
         }
         
         .image-preview {
@@ -232,7 +249,7 @@ require_once 'db_connection.php';
             width: 120px;
             height: 120px;
             border: 1px dashed #ddd;
-            border-radius: 4px;
+            border-radius: 8px;
             overflow: hidden;
         }
         
@@ -256,14 +273,20 @@ require_once 'db_connection.php';
             align-items: center;
             justify-content: center;
             cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .remove-image:hover {
+            transform: scale(1.1);
         }
         
         .dynamic-field {
             margin-bottom: 15px;
             padding: 15px;
             border: 1px solid #eee;
-            border-radius: 4px;
+            border-radius: 8px;
             position: relative;
+            background: #f9f9f9;
         }
         
         .remove-field {
@@ -276,16 +299,29 @@ require_once 'db_connection.php';
             border-radius: 4px;
             padding: 2px 8px;
             cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .remove-field:hover {
+            background: #d32f2f;
         }
         
         .add-field {
             background: var(--success);
             color: white;
             border: none;
-            border-radius: 4px;
-            padding: 8px 15px;
+            border-radius: 8px;
+            padding: 10px 15px;
             margin-bottom: 20px;
             cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        
+        .add-field:hover {
+            background: #388e3c;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(76,175,80,0.3);
         }
         
         .existing-images {
@@ -299,13 +335,20 @@ require_once 'db_connection.php';
             position: relative;
             width: 120px;
             height: 120px;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+        }
+        
+        .existing-image:hover {
+            transform: scale(1.05);
         }
         
         .existing-image img {
             width: 100%;
             height: 100%;
             object-fit: cover;
-            border-radius: 4px;
         }
         
         .existing-image .remove-existing {
@@ -322,33 +365,66 @@ require_once 'db_connection.php';
             align-items: center;
             justify-content: center;
             cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .existing-image .remove-existing:hover {
+            transform: scale(1.1);
+        }
+        
+        /* Responsive Adjustments */
+        @media (max-width: 992px) {
+            .supplier-sidebar {
+                width: 250px;
+            }
+            
+            .supplier-content {
+                margin-left: 250px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .supplier-sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+            }
+            
+            .supplier-content {
+                margin-left: 0;
+            }
+            
+            .form-row {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .form-container {
+                padding: 20px;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="admin-container">
+    <div class="supplier-container">
         <!-- Sidebar -->
-        <div class="admin-sidebar">
-            <div class="admin-logo">
-                <h2>TechMatts Admin</h2>
+        <div class="supplier-sidebar">
+            <div class="supplier-logo">
+                <h2>TechMatts Supplier</h2>
             </div>
-            <ul class="admin-menu">
-                <li><a href="admin.php"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
-                <li><a href="admin-products.php" class="active"><i class="fas fa-box-open"></i> Products</a></li>
-                <li><a href="admin-orders.php"><i class="fas fa-shopping-cart"></i> Orders</a></li>
-                <li><a href="admin-users.php"><i class="fas fa-users"></i> Users</a></li>
-                <!-- <li><a href="admin-suppliers.php"><i class="fas fa-truck"></i> Suppliers</a></li> -->
+            <ul class="supplier-menu">
+                <li><a href="supplier.php"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
                 <li><a href="logout.php"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
             </ul>
         </div>
         
         <!-- Main Content -->
-        <div class="admin-content">
-            <div class="admin-header">
+        <div class="supplier-content">
+            <div class="supplier-header">
                 <h1>Edit Product</h1>
                 <div class="user-profile">
-                    <img src="https://ui-avatars.com/api/?name=Admin&background=e2136e&color=fff" alt="Admin">
-                    <span>Admin</span>
+                    <img src="https://ui-avatars.com/api/?name=Supplier&background=3a86ff&color=fff" alt="Supplier">
+                    <span>Supplier</span>
                 </div>
             </div>
             
@@ -381,9 +457,9 @@ require_once 'db_connection.php';
                         <div class="form-group">
                             <label for="product-status">Status</label>
                             <select id="product-status" name="is_active" required>
-                            <option value="1">Active</option>
-                            <option value="0">Inactive</option>
-                        </select>
+                                <option value="1">Active</option>
+                                <option value="0">Inactive</option>
+                            </select>
                         </div>
                     </div>
                     
@@ -458,7 +534,7 @@ require_once 'db_connection.php';
                     
                     <div class="form-group">
                         <button type="submit" class="btn">Update Product</button>
-                        <a href="admin-products.php" class="btn btn-secondary">Cancel</a>
+                        <a href="supplier.php" class="btn btn-secondary">Cancel</a>
                     </div>
                 </form>
             </div>
@@ -466,7 +542,7 @@ require_once 'db_connection.php';
     </div>
 
     <script>
-        // Show/hide category-specific fields
+        // Similar to admin-edit-product.php but with supplier API endpoints
         document.getElementById('product-category').addEventListener('change', function() {
             const category = this.value;
             document.getElementById('mousepad-fields').style.display = category === 'mousepad' ? 'block' : 'none';
@@ -588,17 +664,27 @@ require_once 'db_connection.php';
             const productId = new URLSearchParams(window.location.search).get('id');
             if (!productId) {
                 alert('No product ID specified');
-                window.location.href = 'admin-products.php';
+                window.location.href = 'supplier.php';
                 return;
             }
             
             try {
+                // First verify the product belongs to this supplier
+                const verifyResponse = await fetch(`supplier_api.php?action=verify_product&id=${productId}`);
+                const verifyResult = await verifyResponse.json();
+                
+                if (!verifyResult.success) {
+                    alert('Product not found or unauthorized');
+                    window.location.href = 'supplier.php';
+                    return;
+                }
+                
                 const response = await fetch(`get_product.php?id=${productId}`);
                 const product = await response.json();
                 
                 if (!product) {
                     alert('Product not found');
-                    window.location.href = 'admin-products.php';
+                    window.location.href = 'supplier.php';
                     return;
                 }
                 
@@ -679,7 +765,7 @@ require_once 'db_connection.php';
             } catch (error) {
                 console.error('Error loading product:', error);
                 alert('Error loading product data');
-                window.location.href = 'admin-products.php';
+                window.location.href = 'supplier.php';
             }
         });
         
@@ -690,7 +776,7 @@ require_once 'db_connection.php';
             const formData = new FormData(this);
             
             try {
-                const response = await fetch('admin_api.php?action=update_product', {
+                const response = await fetch('supplier_api.php?action=update_product', {
                     method: 'POST',
                     body: formData
                 });
@@ -699,7 +785,7 @@ require_once 'db_connection.php';
                 
                 if (result.success) {
                     alert('Product updated successfully!');
-                    window.location.href = 'admin-products.php';
+                    window.location.href = 'supplier.php';
                 } else {
                     alert('Error: ' + result.message);
                 }

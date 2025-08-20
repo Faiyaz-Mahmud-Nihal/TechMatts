@@ -110,13 +110,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         $stmt = $pdo->prepare("UPDATE users SET last_login = NOW() WHERE user_id = ?");
         $stmt->execute([$user['user_id']]);
 
-        // Return different response for admin vs regular user
-        $redirect = ($user['role'] === 'admin') ? 'admin.php' : 'index.html';
+        // Return different response for admin vs regular user vs supplier
+        $redirect = 'index.html';
+        if ($user['role'] === 'admin') {
+            $redirect = 'admin.php';
+        } elseif ($user['role'] === 'supplier') {
+            $redirect = 'supplier.php';
+        }
         
         echo json_encode([
             'success' => true, 
             'message' => 'Login successful!',
-            'redirect' => $redirect  // Fixed variable name and admin.php
+            'redirect' => $redirect
         ]);
     } catch (Exception $e) {
         echo json_encode(['success' => false, 'message' => $e->getMessage()]);
