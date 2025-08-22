@@ -135,10 +135,19 @@
 
         window.addEventListener('resize', updateGridColumns);
         updateGridColumns();
-    });
-    </script>
 
-    <script>
+        // Add animation to product cards
+        setTimeout(function() {
+            const productCards = document.querySelectorAll('.product-card');
+            productCards.forEach((card, index) => {
+                card.classList.add('animate-fade-in-up');
+                card.classList.add(`animate-delay-${(index % 5) + 1}`);
+            });
+        }, 100);
+    });
+</script>
+
+<script>
     // Update auth link based on login status
     document.addEventListener('DOMContentLoaded', async function() {
         try {
